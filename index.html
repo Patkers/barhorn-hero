@@ -90,6 +90,16 @@
         .subtitle { color: #0ff; font-size: 0.65em; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); margin-top: 4px; }
 
         .controls { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 8px 0; }
+        .start-btn { 
+            background: linear-gradient(135deg, #00cc66, #00ff88); 
+            border: none; border-radius: 10px; 
+            padding: 10px 20px; color: #000; 
+            font-family: 'Orbitron'; font-size: 0.85em; font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
+            transition: all 0.2s;
+        }
+        .start-btn:active { transform: scale(0.95); box-shadow: 0 0 30px rgba(0, 255, 100, 0.8); }
         .stop-btn { 
             background: linear-gradient(135deg, #ff0050, #ff0080); 
             border: none; border-radius: 10px; 
@@ -205,7 +215,8 @@
     </div>
 
     <div class="controls">
-        <button class="stop-btn" onclick="stopAll()">🛑 STOP ALL</button>
+        <button class="start-btn" onclick="startAudio()">▶️ START</button>
+        <button class="stop-btn" onclick="stopAll()">🛑 STOP</button>
     </div>
 
     <div class="slider-row">
@@ -254,6 +265,40 @@ var buttons = [
 ];
 
 var audios = [], vol = 0.8, bpm = 200, holdIntervals = {}, beatDots = [];
+var audioReady = false;
+
+function startAudio() {
+    // Create audio context for iOS/mobile
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+        var ctx = new AudioContext();
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+    }
+    
+    // Play a tiny silent sound to unlock audio
+    var unlock = new Audio();
+    unlock.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+    unlock.volume = 0.01;
+    unlock.play().then(function() {
+        audioReady = true;
+        // Flash all beat dots to show it's ready
+        beatDots.forEach(function(dot) {
+            dot.classList.add('active');
+            setTimeout(function() { dot.classList.remove('active'); }, 300);
+        });
+    }).catch(function() {
+        audioReady = true;
+    });
+    
+    // Preload all sounds
+    for (var key in S) {
+        var preload = new Audio();
+        preload.src = S[key];
+        preload.load();
+    }
+}
 
 function playSound(key) {
     if (!S[key]) return;
