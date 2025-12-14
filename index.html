@@ -316,7 +316,18 @@ function playSound(key) {
 }
 
 function stopAll() {
-    audios.forEach(function(a) { a.pause(); a.currentTime = 0; });
+    // Quick fade out (300ms) instead of abrupt stop
+    audios.forEach(function(a) {
+        var fadeOut = setInterval(function() {
+            if (a.volume > 0.1) {
+                a.volume -= 0.1;
+            } else {
+                clearInterval(fadeOut);
+                a.pause();
+                a.currentTime = 0;
+            }
+        }, 30);
+    });
     audios = [];
     Object.keys(holdIntervals).forEach(function(k) { clearInterval(holdIntervals[k]); });
     holdIntervals = {};
