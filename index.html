@@ -20,7 +20,22 @@
             overflow: hidden;
         }
         
-        /* Animated gradient background */
+        /* Screen flash effect */
+        .screen-flash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+        }
+        .screen-flash.active {
+            animation: flashOut 0.3s ease-out forwards;
+        }
+        @keyframes flashOut {
+            0% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+        
         .bg-gradient {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -38,7 +53,6 @@
             50% { filter: hue-rotate(30deg); }
         }
         
-        /* Glowing orbs */
         .orb {
             position: absolute;
             border-radius: 50%;
@@ -48,14 +62,12 @@
         }
         .orb1 { width: 300px; height: 300px; background: rgba(0, 255, 255, 0.4); top: -100px; left: -100px; }
         .orb2 { width: 250px; height: 250px; background: rgba(255, 0, 255, 0.4); bottom: -80px; right: -80px; animation-delay: -4s; }
-        .orb3 { width: 200px; height: 200px; background: rgba(255, 200, 0, 0.3); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -2s; }
         
         @keyframes orbFloat {
             0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
             50% { transform: translate(30px, -30px) scale(1.2); opacity: 1; }
         }
         
-        /* Grid overlay */
         .grid-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -72,70 +84,60 @@
             position: relative; z-index: 1;
         }
         
-        .header { text-align: center; padding: 10px 0; }
+        .header { text-align: center; padding: 6px 0; }
         .app-title { 
-            font-size: 1.8em; font-weight: 900; 
+            font-size: 1.6em; font-weight: 900; 
             background: linear-gradient(90deg, #0ff, #f0f, #ff0, #0ff);
             background-size: 300% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: titleShine 3s linear infinite;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
         }
         @keyframes titleShine {
             0% { background-position: 0% 50%; }
             100% { background-position: 300% 50%; }
         }
-        .subtitle { color: #0ff; font-size: 0.65em; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); margin-top: 4px; }
+        .subtitle { color: #0ff; font-size: 0.55em; margin-top: 2px; }
 
-        .controls { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 8px 0; }
-        .start-btn { 
-            background: linear-gradient(135deg, #00cc66, #00ff88); 
-            border: none; border-radius: 10px; 
-            padding: 10px 20px; color: #000; 
-            font-family: 'Orbitron'; font-size: 0.85em; font-weight: bold; 
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 255, 100, 0.5);
-            transition: all 0.2s;
+        /* Beat dots */
+        .beat-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px 0;
         }
-        .start-btn:active { transform: scale(0.95); box-shadow: 0 0 30px rgba(0, 255, 100, 0.8); }
+        .beat-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transition: all 0.1s;
+        }
+        .beat-dot.active {
+            background: #0ff;
+            box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+            transform: scale(1.4);
+        }
+        .beat-dot.active2 {
+            background: #f0f;
+            box-shadow: 0 0 10px #f0f, 0 0 20px #f0f;
+            transform: scale(1.4);
+        }
+        .beat-dot.active3 {
+            background: #ff0;
+            box-shadow: 0 0 10px #ff0, 0 0 20px #ff0;
+            transform: scale(1.4);
+        }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 5px 0; }
         .stop-btn { 
             background: linear-gradient(135deg, #ff0050, #ff0080); 
             border: none; border-radius: 10px; 
-            padding: 10px 20px; color: #fff; 
+            padding: 10px 25px; color: #fff; 
             font-family: 'Orbitron'; font-size: 0.85em; font-weight: bold; 
             cursor: pointer;
             box-shadow: 0 0 20px rgba(255, 0, 100, 0.5);
-            transition: all 0.2s;
-        }
-        .stop-btn:active { transform: scale(0.95); box-shadow: 0 0 30px rgba(255, 0, 100, 0.8); }
-
-        .slider-row { display: flex; justify-content: center; gap: 15px; padding: 8px 0; font-size: 0.7em; }
-        .slider-group { display: flex; align-items: center; gap: 6px; }
-        .slider-group input { 
-            width: 80px; height: 6px; border-radius: 3px; 
-            -webkit-appearance: none; 
-            background: linear-gradient(90deg, rgba(0,255,255,0.3), rgba(255,0,255,0.3)); 
-        }
-        .slider-group input::-webkit-slider-thumb { 
-            -webkit-appearance: none; width: 18px; height: 18px; 
-            background: linear-gradient(135deg, #0ff, #f0f); 
-            border-radius: 50%; 
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
-        }
-        .slider-val { color: #ff0; min-width: 40px; text-align: center; text-shadow: 0 0 10px rgba(255,255,0,0.5); }
-
-        .beat-indicator { display: flex; justify-content: center; gap: 5px; padding: 6px 0; }
-        .beat-dot { 
-            width: 12px; height: 12px; 
-            background: rgba(255,255,255,0.2); 
-            border-radius: 50%; 
-            transition: all 0.1s; 
-        }
-        .beat-dot.active { 
-            background: #0f8; 
-            box-shadow: 0 0 15px #0f8, 0 0 30px #0f8; 
         }
 
         .sound-grid { 
@@ -143,88 +145,75 @@
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             grid-template-rows: repeat(3, 1fr); 
-            gap: 8px; 
-            padding: 8px 0; 
+            gap: 6px; 
+            padding: 6px 0; 
         }
         
         .sound-btn { 
-            background: rgba(255,255,255,0.05); 
-            border: 2px solid rgba(0, 255, 255, 0.3); 
-            border-radius: 15px; 
+            background: rgba(255,255,255,0.1); 
+            border: 2px solid rgba(0, 255, 255, 0.4); 
+            border-radius: 12px; 
             display: flex; flex-direction: column; 
             align-items: center; justify-content: center; 
             cursor: pointer; 
-            transition: all 0.1s; 
             user-select: none;
-            backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
         }
-        .sound-btn::before {
-            content: '';
+        
+        /* Ripple effect */
+        .ripple {
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleAnim 0.5s ease-out forwards;
+            pointer-events: none;
         }
-        .sound-btn:hover::before { left: 100%; }
+        @keyframes rippleAnim {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
         
-        .sound-btn:active, .sound-btn.playing { 
-            transform: scale(0.95); 
-            background: rgba(0, 255, 255, 0.2); 
+        .sound-btn:active { 
+            background: rgba(0, 255, 255, 0.3); 
             border-color: #0ff; 
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 20px rgba(0, 255, 255, 0.2); 
-        }
-        .sound-btn.holding { 
-            animation: pulse 0.2s infinite alternate; 
-            border-color: #f0f;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
-        }
-        @keyframes pulse { 
-            from { box-shadow: 0 0 20px rgba(255,0,255,0.5); } 
-            to { box-shadow: 0 0 40px rgba(255,255,0,0.8); } 
+            transform: scale(0.95);
         }
         
-        .sound-icon { font-size: 1.6em; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
-        .sound-label { 
-            font-size: 0.5em; text-align: center; 
-            margin-top: 4px; line-height: 1.1; 
-            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        .sound-btn.tapped {
+            animation: glowPulse 0.3s ease-out;
         }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+            50% { box-shadow: 0 0 30px rgba(0,255,255,0.8), inset 0 0 15px rgba(0,255,255,0.3); }
+            100% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+        }
+        
+        .sound-icon { font-size: 1.4em; z-index: 1; }
+        .sound-label { font-size: 0.4em; margin-top: 2px; z-index: 1; }
 
-        .footer { 
-            text-align: center; padding: 8px; 
-            font-size: 0.55em; 
-            color: rgba(0, 255, 255, 0.6);
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-        }
+        .footer { text-align: center; padding: 4px; font-size: 0.45em; color: rgba(0,255,255,0.6); }
     </style>
 </head>
 <body>
+    <div class="screen-flash" id="screenFlash"></div>
     <div class="bg-gradient"></div>
     <div class="orb orb1"></div>
     <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
     <div class="grid-overlay"></div>
     
 <div class="container">
     <div class="header">
         <div class="app-title">📯 BARHORN HERO</div>
-        <div class="subtitle">TAP TO PLAY • HOLD FOR RAPID FIRE!</div>
+        <div class="subtitle">TAP TO PLAY</div>
     </div>
+
+    <div class="beat-row" id="beatDots"></div>
 
     <div class="controls">
-        <button class="start-btn" onclick="startAudio()">▶️ START</button>
-        <button class="stop-btn" onclick="stopAll()">🛑 STOP</button>
+        <button class="stop-btn" id="stopBtn">🛑 STOP ALL</button>
     </div>
-
-    <div class="slider-row">
-        <div class="slider-group">🔈<input type="range" id="volSlider" min="0" max="100" value="80"><span class="slider-val" id="volVal">80%</span></div>
-        <div class="slider-group">⚡<input type="range" id="bpmSlider" min="100" max="500" value="200"><span class="slider-val" id="bpmVal">200</span></div>
-    </div>
-
-    <div class="beat-indicator" id="beatIndicator"></div>
 
     <div class="sound-grid" id="grid"></div>
 
@@ -232,8 +221,7 @@
 </div>
 
 <script>
-// 12 WORKING SOUNDS IN YOUR ORDER
-var S = {
+var sounds = {
     airhorn2: 'https://www.orangefreesounds.com/wp-content/uploads/2021/03/Air-horn-noise.mp3',
     applause: 'https://www.orangefreesounds.com/wp-content/uploads/2014/10/Applause-sound-effect.mp3',
     boo: 'https://www.orangefreesounds.com/wp-content/uploads/2016/04/Crowd-booing-sound-effect.mp3',
@@ -248,157 +236,116 @@ var S = {
     cymbal: 'https://www.orangefreesounds.com/wp-content/uploads/2015/12/Cymbal-sound.mp3'
 };
 
-// YOUR ORDER: 12 buttons for 4x3 grid
 var buttons = [
-    {i:'📯', l:'AIR HORN', s:'airhorn2'},
-    {i:'👏', l:'APPLAUSE', s:'applause'},
-    {i:'👎', l:'BOO!', s:'boo'},
-    {i:'📣', l:'CROWD ROAR', s:'roar'},
-    {i:'🎉', l:'CROWD CHEER', s:'cheer'},
-    {i:'🎊', l:'CHEER 2', s:'cheer2'},
-    {i:'🙌', l:'CHEERING', s:'cheering'},
-    {i:'🏟️', l:'STADIUM', s:'stadium'},
-    {i:'🎵', l:'WHISTLE', s:'whistle'},
-    {i:'❌', l:'BUZZER', s:'buzzer'},
-    {i:'💰', l:'KA-CHING', s:'cash'},
-    {i:'🔔', l:'CYMBAL', s:'cymbal'}
+    {icon: '📯', label: 'AIR HORN', sound: 'airhorn2', color: '#ff0'},
+    {icon: '👏', label: 'APPLAUSE', sound: 'applause', color: '#0ff'},
+    {icon: '👎', label: 'BOO!', sound: 'boo', color: '#f00'},
+    {icon: '📣', label: 'CROWD ROAR', sound: 'roar', color: '#f0f'},
+    {icon: '🎉', label: 'CROWD CHEER', sound: 'cheer', color: '#0f0'},
+    {icon: '🎊', label: 'CHEER 2', sound: 'cheer2', color: '#ff0'},
+    {icon: '🙌', label: 'CHEERING', sound: 'cheering', color: '#0ff'},
+    {icon: '🏟️', label: 'STADIUM', sound: 'stadium', color: '#f0f'},
+    {icon: '🎵', label: 'WHISTLE', sound: 'whistle', color: '#fff'},
+    {icon: '❌', label: 'BUZZER', sound: 'buzzer', color: '#f00'},
+    {icon: '💰', label: 'KA-CHING', sound: 'cash', color: '#ff0'},
+    {icon: '🔔', label: 'CYMBAL', sound: 'cymbal', color: '#0ff'}
 ];
 
-var audios = [], vol = 0.8, bpm = 200, holdIntervals = {}, beatDots = [];
-var audioReady = false;
+var allAudio = [];
+var beatDots = [];
 
-function startAudio() {
-    // Create audio context for iOS/mobile
-    var AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (AudioContext) {
-        var ctx = new AudioContext();
-        if (ctx.state === 'suspended') {
-            ctx.resume();
-        }
-    }
-    
-    // Play a tiny silent sound to unlock audio
-    var unlock = new Audio();
-    unlock.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-    unlock.volume = 0.01;
-    unlock.play().then(function() {
-        audioReady = true;
-        // Flash all beat dots to show it's ready
-        beatDots.forEach(function(dot) {
-            dot.classList.add('active');
-            setTimeout(function() { dot.classList.remove('active'); }, 300);
-        });
-    }).catch(function() {
-        audioReady = true;
-    });
-    
-    // Preload all sounds
-    for (var key in S) {
-        var preload = new Audio();
-        preload.src = S[key];
-        preload.load();
-    }
+function screenFlash(color) {
+    var flash = document.getElementById('screenFlash');
+    flash.style.background = 'radial-gradient(circle, ' + color + ' 0%, transparent 70%)';
+    flash.classList.remove('active');
+    void flash.offsetWidth;
+    flash.classList.add('active');
 }
 
-function playSound(key) {
-    if (!S[key]) return;
-    var a = new Audio(S[key]);
-    a.volume = vol;
-    audios.push(a);
-    a.play().catch(function(e) { console.log('Error:', e); });
-    flashBeat();
-    setTimeout(function() {
-        var fade = setInterval(function() {
-            if (a.volume > 0.05) a.volume -= 0.05;
-            else { clearInterval(fade); a.pause(); var i = audios.indexOf(a); if (i > -1) audios.splice(i,1); }
-        }, 40);
-    }, 4000);
+function pulseBeat(color) {
+    var dot = beatDots[Math.floor(Math.random() * beatDots.length)];
+    var cls = color === '#f00' ? 'active2' : color === '#ff0' ? 'active3' : 'active';
+    dot.classList.add(cls);
+    setTimeout(function() { dot.classList.remove('active', 'active2', 'active3'); }, 200);
+}
+
+function createRipple(btn, x, y) {
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    var rect = btn.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (x - rect.left - size/2) + 'px';
+    ripple.style.top = (y - rect.top - size/2) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(function() { ripple.remove(); }, 500);
+}
+
+function playSound(soundKey, color, btn, x, y) {
+    var audio = new Audio(sounds[soundKey]);
+    allAudio.push(audio);
+    audio.play();
+    
+    screenFlash(color);
+    pulseBeat(color);
+    createRipple(btn, x, y);
+    btn.classList.add('tapped');
+    setTimeout(function() { btn.classList.remove('tapped'); }, 300);
+    
+    audio.onended = function() {
+        var i = allAudio.indexOf(audio);
+        if (i > -1) allAudio.splice(i, 1);
+    };
 }
 
 function stopAll() {
-    // Very quick fade out (~100ms)
-    audios.forEach(function(a) {
-        var fadeOut = setInterval(function() {
-            if (a.volume > 0.2) {
-                a.volume -= 0.2;
+    allAudio.forEach(function(audio) {
+        var vol = audio.volume;
+        var fade = setInterval(function() {
+            vol -= 0.2;
+            if (vol <= 0) {
+                clearInterval(fade);
+                audio.pause();
+                audio.currentTime = 0;
             } else {
-                clearInterval(fadeOut);
-                a.pause();
-                a.currentTime = 0;
+                audio.volume = vol;
             }
-        }, 20);
+        }, 10);
     });
-    audios = [];
-    Object.keys(holdIntervals).forEach(function(k) { clearInterval(holdIntervals[k]); });
-    holdIntervals = {};
-    document.querySelectorAll('.sound-btn').forEach(function(b) { b.classList.remove('playing','holding'); });
-}
-
-function flashBeat() {
-    var dot = beatDots[Math.floor(Math.random() * beatDots.length)];
-    if (dot) { dot.classList.add('active'); setTimeout(function() { dot.classList.remove('active'); }, 100); }
-}
-
-function render() {
-    var grid = document.getElementById('grid');
-    grid.innerHTML = '';
+    allAudio = [];
     
-    buttons.forEach(function(btn, idx) {
-        var el = document.createElement('div');
-        el.className = 'sound-btn';
-        el.innerHTML = '<div class="sound-icon">' + btn.i + '</div><div class="sound-label">' + btn.l + '</div>';
+    beatDots.forEach(function(dot) {
+        dot.classList.add('active2');
+        setTimeout(function() { dot.classList.remove('active2'); }, 200);
+    });
+}
+
+function createUI() {
+    var beatRow = document.getElementById('beatDots');
+    for (var i = 0; i < 14; i++) {
+        var dot = document.createElement('div');
+        dot.className = 'beat-dot';
+        beatRow.appendChild(dot);
+        beatDots.push(dot);
+    }
+    
+    var grid = document.getElementById('grid');
+    buttons.forEach(function(btn) {
+        var div = document.createElement('div');
+        div.className = 'sound-btn';
+        div.innerHTML = '<div class="sound-icon">' + btn.icon + '</div><div class="sound-label">' + btn.label + '</div>';
         
-        if (btn.s) {
-            el.onclick = function() {
-                playSound(btn.s);
-                el.classList.add('playing');
-                setTimeout(function() { el.classList.remove('playing'); }, 150);
-            };
-            
-            var startHold = function(e) {
-                e.preventDefault();
-                playSound(btn.s);
-                el.classList.add('holding');
-                holdIntervals[idx] = setInterval(function() { playSound(btn.s); }, 60000 / bpm);
-            };
-            var endHold = function() {
-                el.classList.remove('holding');
-                if (holdIntervals[idx]) { clearInterval(holdIntervals[idx]); delete holdIntervals[idx]; }
-            };
-            
-            el.onmousedown = startHold;
-            el.onmouseup = endHold;
-            el.onmouseleave = endHold;
-            el.ontouchstart = startHold;
-            el.ontouchend = endHold;
-            el.ontouchcancel = endHold;
-        } else {
-            el.style.opacity = '0.3';
-            el.style.pointerEvents = 'none';
-        }
+        div.addEventListener('click', function(e) {
+            playSound(btn.sound, btn.color, div, e.clientX, e.clientY);
+        });
         
-        grid.appendChild(el);
+        grid.appendChild(div);
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    var volS = document.getElementById('volSlider');
-    var volV = document.getElementById('volVal');
-    var bpmS = document.getElementById('bpmSlider');
-    var bpmV = document.getElementById('bpmVal');
-    var beatInd = document.getElementById('beatIndicator');
-    
-    for (var i = 0; i < 8; i++) {
-        var dot = document.createElement('div');
-        dot.className = 'beat-dot';
-        beatInd.appendChild(dot);
-        beatDots.push(dot);
-    }
-    
-    volS.oninput = function() { vol = this.value / 100; volV.textContent = this.value + '%'; };
-    bpmS.oninput = function() { bpm = parseInt(this.value); bpmV.textContent = this.value; };
-    
-    render();
+    createUI();
+    document.getElementById('stopBtn').addEventListener('click', stopAll);
 });
 </script>
 </body>
