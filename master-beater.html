@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MASTER-BEATER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; touch-action: manipulation; }
+        
+        body { 
+            font-family: 'Orbitron', sans-serif; 
+            color: #fff; 
+            height: 100dvh; 
+            display: flex; 
+            flex-direction: column;
+            background: #0a0a1a;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animated gradient background */
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse at 0% 0%, rgba(255, 0, 100, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 0%, rgba(0, 255, 200, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(255, 200, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 100%, rgba(100, 0, 255, 0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+            animation: bgShift 8s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes bgShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(40deg); }
+        }
+        
+        /* Glowing orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: orbFloat 6s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .orb1 { width: 250px; height: 250px; background: rgba(255, 0, 150, 0.5); top: -80px; left: -80px; }
+        .orb2 { width: 200px; height: 200px; background: rgba(0, 255, 255, 0.4); bottom: -60px; right: -60px; animation-delay: -3s; }
+        .orb3 { width: 180px; height: 180px; background: rgba(255, 255, 0, 0.3); top: 40%; right: 10%; animation-delay: -1.5s; }
+        
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            50% { transform: translate(20px, -20px) scale(1.15); opacity: 0.8; }
+        }
+        
+        /* Grid overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container { 
+            flex: 1; display: flex; flex-direction: column; 
+            padding: 8px; width: 100%; max-width: 100%;
+            position: relative; z-index: 1;
+            overflow: hidden;
+        }
+        
+        .header { text-align: center; padding: 8px 0; }
+        .app-title { 
+            font-size: 1.6em; font-weight: 900; 
+            background: linear-gradient(90deg, #f0f, #0ff, #ff0, #f0f);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 3s linear infinite;
+        }
+        @keyframes titleShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        .subtitle { color: #f0f; font-size: 0.55em; margin-top: 2px; text-shadow: 0 0 10px rgba(255,0,255,0.5); }
+
+        /* Beat dots */
+        .beat-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            padding: 6px 0;
+        }
+        .beat-dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transition: all 0.1s;
+        }
+        .beat-dot.active {
+            background: #0ff;
+            box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+            transform: scale(1.4);
+        }
+        .beat-dot.active2 {
+            background: #f0f;
+            box-shadow: 0 0 10px #f0f, 0 0 20px #f0f;
+            transform: scale(1.4);
+        }
+        .beat-dot.active3 {
+            background: #ff0;
+            box-shadow: 0 0 10px #ff0, 0 0 20px #ff0;
+            transform: scale(1.4);
+        }
+
+        .controls { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+            padding: 6px 0; 
+            flex-wrap: wrap;
+        }
+        .stop-btn { 
+            background: linear-gradient(135deg, #ff0050, #ff0080); 
+            border: none; border-radius: 8px; 
+            padding: 8px 20px; color: #fff; 
+            font-family: 'Orbitron'; font-size: 0.75em; font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 100, 0.5);
+        }
+        
+        /* Tab buttons */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 5px 0;
+        }
+        .tab-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-family: 'Orbitron';
+            font-size: 0.6em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            border-color: #0ff;
+            background: rgba(0,255,255,0.2);
+            box-shadow: 0 0 15px rgba(0,255,255,0.4);
+        }
+        .tab-btn.funky { border-color: #f0f; }
+        .tab-btn.funky.active { background: rgba(255,0,255,0.2); box-shadow: 0 0 15px rgba(255,0,255,0.4); }
+        .tab-btn.drums { border-color: #0ff; }
+        .tab-btn.drums.active { background: rgba(0,255,255,0.2); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        .tab-btn.synth { border-color: #ff0; }
+        .tab-btn.synth.active { background: rgba(255,255,0,0.2); box-shadow: 0 0 15px rgba(255,255,0,0.4); }
+
+        /* Sound panels */
+        .sound-panel {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .sound-panel.active {
+            display: block;
+        }
+        
+        .sound-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 6px; 
+            padding-bottom: 10px;
+        }
+        
+        .sound-btn { 
+            background: rgba(255,255,255,0.1); 
+            border: 2px solid rgba(0, 255, 255, 0.3); 
+            border-radius: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            padding: 12px 5px;
+            min-height: 60px;
+        }
+        
+        .sound-btn.funky { border-color: rgba(255, 0, 255, 0.4); }
+        .sound-btn.drums { border-color: rgba(0, 255, 255, 0.4); }
+        .sound-btn.synth { border-color: rgba(255, 255, 0, 0.4); }
+        
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: rippleAnim 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        
+        .sound-btn:active { 
+            transform: scale(0.95);
+        }
+        
+        .sound-btn.playing {
+            animation: glowPulse 0.3s ease-out;
+        }
+        .sound-btn.funky.playing { box-shadow: 0 0 25px rgba(255,0,255,0.7); border-color: #f0f; }
+        .sound-btn.drums.playing { box-shadow: 0 0 25px rgba(0,255,255,0.7); border-color: #0ff; }
+        .sound-btn.synth.playing { box-shadow: 0 0 25px rgba(255,255,0,0.7); border-color: #ff0; }
+        
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+            50% { box-shadow: 0 0 30px rgba(255,255,255,0.6); }
+            100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+        }
+        
+        .sound-btn.looping {
+            animation: loopPulse 0.5s infinite alternate;
+        }
+        .sound-btn.funky.looping { background: rgba(255,0,255,0.3); }
+        .sound-btn.drums.looping { background: rgba(0,255,255,0.3); }
+        .sound-btn.synth.looping { background: rgba(255,255,0,0.3); }
+        
+        @keyframes loopPulse {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+        
+        .sound-icon { font-size: 1.3em; z-index: 1; }
+        .sound-label { 
+            font-size: 0.4em; 
+            margin-top: 3px; 
+            z-index: 1; 
+            text-align: center;
+            line-height: 1.1;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Screen flash */
+        .screen-flash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+        }
+        .screen-flash.active {
+            animation: flashOut 0.2s ease-out forwards;
+        }
+        @keyframes flashOut {
+            0% { opacity: 0.4; }
+            100% { opacity: 0; }
+        }
+
+        .footer { 
+            text-align: center; 
+            padding: 5px; 
+            font-size: 0.45em; 
+            color: rgba(255,0,255,0.6);
+        }
+        
+        /* Scrollbar styling */
+        .sound-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sound-panel::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        .sound-panel::-webkit-scrollbar-thumb {
+            background: rgba(255,0,255,0.5);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-flash" id="screenFlash"></div>
+    <div class="bg-gradient"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="grid-overlay"></div>
+    
+<div class="container">
+    <div class="header">
+        <div class="app-title">🎛️ MASTER-BEATER</div>
+        <div class="subtitle">TAP TO PLAY • TAP AGAIN TO LOOP • MIX IT UP!</div>
+    </div>
+
+    <div class="beat-row" id="beatDots"></div>
+
+    <div class="controls">
+        <button class="stop-btn" id="stopBtn">🛑 STOP ALL</button>
+    </div>
+    
+    <div class="tab-container">
+        <button class="tab-btn funky active" data-tab="funky">🎸 FUNKY BEATS</button>
+        <button class="tab-btn drums" data-tab="drums">🥁 DRUM BREAKS</button>
+        <button class="tab-btn synth" data-tab="synth">🎹 SYNTH LOOPS</button>
+    </div>
+
+    <div class="sound-panel active" id="panel-funky"></div>
+    <div class="sound-panel" id="panel-drums"></div>
+    <div class="sound-panel" id="panel-synth"></div>
+
+    <div class="footer">NOWAK VIBE CONSULTING</div>
+</div>
+
+<script>
+// Base URL for sounds - UPDATE THIS to your GitHub Pages URL
+var BASE_URL = 'https://patkers.github.io/barhorn-hero/sounds/';
+
+// Sound definitions for each category
+var funkyBeats = [];
+for (var i = 1; i <= 27; i++) {
+    funkyBeats.push({
+        label: 'FUNKY ' + i,
+        file: 'funkybeat/Funky beat ' + i + '.wav',
+        icon: '🎸'
+    });
+}
+
+var drumBreaks = [
+    {label: 'BREAK 86', file: 'drumbreak/1-drum-break-86-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 90', file: 'drumbreak/2-drum-break-90-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 102', file: 'drumbreak/3-drum-break-102-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 106', file: 'drumbreak/4-drum-break-106-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 108', file: 'drumbreak/5-drum-break-108-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 109', file: 'drumbreak/6-drum-break-109-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 110', file: 'drumbreak/7-drum-break-110-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 114a', file: 'drumbreak/8-drum-break-114-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 114b', file: 'drumbreak/9-drum-break-114-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 116', file: 'drumbreak/10-drum-break-116-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 120a', file: 'drumbreak/11-drum-break-120-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 120b', file: 'drumbreak/12-drum-break-120-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 123a', file: 'drumbreak/13-drum-break-123-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 123b', file: 'drumbreak/14-drum-break-123-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 126', file: 'drumbreak/15-drum-break-126-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 127a', file: 'drumbreak/16-drum-break-127-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 127b', file: 'drumbreak/17-drum-break-127-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 127c', file: 'drumbreak/18-drum-break-127-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 127d', file: 'drumbreak/19-drum-break-127-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 127e', file: 'drumbreak/20-drum-break-127-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 130a', file: 'drumbreak/22-drum-break-130-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 130b', file: 'drumbreak/23-drum-break-130-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 131', file: 'drumbreak/25-drum-break-131-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 135a', file: 'drumbreak/26-drum-break-135-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 135b', file: 'drumbreak/27-drum-break-135-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 140a', file: 'drumbreak/28-drum-break-140-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 140b', file: 'drumbreak/29-drum-break-140-bpm.wav', icon: '🥁'},
+    {label: 'BREAK 146', file: 'drumbreak/30-drum-break-146-bpm.wav', icon: '🥁'}
+];
+
+var synthLoops = [];
+for (var i = 1; i <= 24; i++) {
+    synthLoops.push({
+        label: 'KORG ' + i,
+        file: 'synth/Korg MS2000 synth loop 120 bpm-' + i + '.wav',
+        icon: '🎹'
+    });
+}
+// Add Synth Pads
+synthLoops.push({label: 'MYSTIC 2', file: 'synth/Synth Pad - Soft mystical 2.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 3', file: 'synth/Synth Pad - Soft mystical 3.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 4 HI', file: 'synth/Synth Pad - Soft mystical 4 - Hi notes.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 5 LO', file: 'synth/Synth Pad - Soft mystical 5 - Low notes.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 6', file: 'synth/Synth Pad - Soft mystical 6.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 7 HI', file: 'synth/Synth Pad - Soft mystical 7 - Hi notes.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 8', file: 'synth/Synth Pad - Soft mystical 8.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 9', file: 'synth/Synth Pad - Soft mystical 9.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 10', file: 'synth/Synth Pad - Soft mystical 10.wav', icon: '✨'});
+synthLoops.push({label: 'MYSTIC 11', file: 'synth/Synth Pad - Soft mystical 11.wav', icon: '✨'});
+synthLoops.push({label: 'BELLS', file: 'synth/Synth pad - Mystycal bells.wav', icon: '🔔'});
+synthLoops.push({label: 'EPIC 12', file: 'synth/Synth-pad - Epic 12.wav', icon: '🌟'});
+
+var allAudio = {};
+var beatDots = [];
+var loopingButtons = {};
+
+function screenFlash(color) {
+    var flash = document.getElementById('screenFlash');
+    flash.style.background = 'radial-gradient(circle, ' + color + ' 0%, transparent 70%)';
+    flash.classList.remove('active');
+    void flash.offsetWidth;
+    flash.classList.add('active');
+}
+
+function pulseBeat(color) {
+    var dot = beatDots[Math.floor(Math.random() * beatDots.length)];
+    var cls = color === '#f0f' ? 'active' : color === '#0ff' ? 'active2' : 'active3';
+    dot.classList.add(cls);
+    setTimeout(function() { dot.classList.remove('active', 'active2', 'active3'); }, 200);
+}
+
+function createRipple(btn, x, y) {
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    var rect = btn.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (x - rect.left - size/2) + 'px';
+    ripple.style.top = (y - rect.top - size/2) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(function() { ripple.remove(); }, 500);
+}
+
+function playSound(soundKey, color, btn, x, y) {
+    var existingAudio = allAudio[soundKey];
+    
+    // If already playing, toggle loop
+    if (existingAudio && !existingAudio.paused) {
+        if (loopingButtons[soundKey]) {
+            // Stop looping
+            existingAudio.loop = false;
+            loopingButtons[soundKey] = false;
+            btn.classList.remove('looping');
+        } else {
+            // Start looping
+            existingAudio.loop = true;
+            loopingButtons[soundKey] = true;
+            btn.classList.add('looping');
+        }
+        return;
+    }
+    
+    // Create new audio
+    var audio = new Audio(BASE_URL + soundKey);
+    audio.loop = false;
+    allAudio[soundKey] = audio;
+    loopingButtons[soundKey] = false;
+    
+    audio.play().catch(function(e) { console.log('Play error:', e); });
+    
+    // Visual effects
+    screenFlash(color);
+    pulseBeat(color);
+    createRipple(btn, x, y);
+    btn.classList.add('playing');
+    setTimeout(function() { btn.classList.remove('playing'); }, 300);
+    
+    audio.onended = function() {
+        if (!audio.loop) {
+            delete allAudio[soundKey];
+            loopingButtons[soundKey] = false;
+            btn.classList.remove('looping');
+        }
+    };
+}
+
+function stopAll() {
+    Object.keys(allAudio).forEach(function(key) {
+        var audio = allAudio[key];
+        if (audio) {
+            audio.loop = false;
+            var vol = audio.volume;
+            var fade = setInterval(function() {
+                vol -= 0.2;
+                if (vol <= 0) {
+                    clearInterval(fade);
+                    audio.pause();
+                    audio.currentTime = 0;
+                } else {
+                    audio.volume = vol;
+                }
+            }, 15);
+        }
+    });
+    allAudio = {};
+    loopingButtons = {};
+    
+    document.querySelectorAll('.sound-btn').forEach(function(btn) {
+        btn.classList.remove('looping', 'playing');
+    });
+    
+    // Flash all dots
+    beatDots.forEach(function(dot) {
+        dot.classList.add('active');
+        setTimeout(function() { dot.classList.remove('active'); }, 200);
+    });
+}
+
+function createButtons(panel, sounds, type, color) {
+    var grid = document.createElement('div');
+    grid.className = 'sound-grid';
+    
+    sounds.forEach(function(snd) {
+        var btn = document.createElement('div');
+        btn.className = 'sound-btn ' + type;
+        btn.innerHTML = '<div class="sound-icon">' + snd.icon + '</div><div class="sound-label">' + snd.label + '</div>';
+        
+        btn.addEventListener('click', function(e) {
+            playSound(snd.file, color, btn, e.clientX, e.clientY);
+        });
+        
+        grid.appendChild(btn);
+    });
+    
+    panel.appendChild(grid);
+}
+
+function setupTabs() {
+    var tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            tabs.forEach(function(t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+            
+            document.querySelectorAll('.sound-panel').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+        });
+    });
+}
+
+function createUI() {
+    // Beat dots
+    var beatRow = document.getElementById('beatDots');
+    for (var i = 0; i < 16; i++) {
+        var dot = document.createElement('div');
+        dot.className = 'beat-dot';
+        beatRow.appendChild(dot);
+        beatDots.push(dot);
+    }
+    
+    // Sound panels
+    createButtons(document.getElementById('panel-funky'), funkyBeats, 'funky', '#f0f');
+    createButtons(document.getElementById('panel-drums'), drumBreaks, 'drums', '#0ff');
+    createButtons(document.getElementById('panel-synth'), synthLoops, 'synth', '#ff0');
+    
+    setupTabs();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    createUI();
+    document.getElementById('stopBtn').addEventListener('click', stopAll);
+});
+</script>
+</body>
+</html>
