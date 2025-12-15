@@ -132,10 +132,10 @@
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 6px 8px;
             color: #fff;
             font-family: 'Orbitron';
-            font-size: 0.6em;
+            font-size: 0.5em;
             font-weight: bold;
             cursor: pointer;
         }
@@ -209,11 +209,13 @@
         <button class="tab-btn active" onclick="showTab('funky')">🎸 FUNKY</button>
         <button class="tab-btn" onclick="showTab('drums')">🥁 DRUMS</button>
         <button class="tab-btn" onclick="showTab('synth')">🎹 SYNTH</button>
+        <button class="tab-btn" onclick="showTab('electic')">✨ ELECTIC</button>
     </div>
 
     <div class="sound-panel active" id="panel-funky"></div>
     <div class="sound-panel" id="panel-drums"></div>
     <div class="sound-panel" id="panel-synth"></div>
+    <div class="sound-panel" id="panel-electic"></div>
 
     <div class="footer">NOWAK VIBE CONSULTING</div>
 </div>
@@ -269,6 +271,17 @@ var SOUNDS = {
         'Korg MS2000 synth loop 120 bpm-12.wav',
         'Korg MS2000 synth loop 120 bpm-13.wav',
         'Korg MS2000 synth loop 120 bpm-20.wav'
+    ],
+    electic: [
+        'Synth Pad - Soft mystical 2.wav',
+        'Synth Pad - Soft mystical 3.wav',
+        'Synth Pad - Soft mystical 4 - Hi notes.wav',
+        'Synth Pad - Soft mystical 5 - Low notes.wav',
+        'Synth Pad - Soft mystical 6.wav',
+        'Synth Pad - Soft mystical 7 - Hi notes.wav',
+        'Synth Pad - Soft mystical 8.wav',
+        'Synth Pad - Soft mystical 9.wav',
+        'Synth pad - Mystycal bells.wav'
     ]
 };
 
@@ -348,7 +361,15 @@ function buildPanel(panelId, folder, files, icon) {
     files.forEach(function(file, idx) {
         var btn = document.createElement('div');
         btn.className = 'sound-btn';
-        var label = file.replace('.wav', '').replace('Funky beat ', 'FUNKY ').replace('Korg MS2000 synth loop 120 bpm-', 'KORG ').replace(/-drum-break-/g, ' BPM ').replace(/^\d+-/, '');
+        var label = file.replace('.wav', '')
+            .replace('Funky beat ', 'FUNKY ')
+            .replace('Korg MS2000 synth loop 120 bpm-', 'KORG ')
+            .replace(/-drum-break-/g, ' BPM ')
+            .replace(/^\d+-/, '')
+            .replace('Synth Pad - Soft mystical ', 'MYSTIC ')
+            .replace('Synth pad - Mystycal bells', 'BELLS')
+            .replace(' - Hi notes', ' HI')
+            .replace(' - Low notes', ' LO');
         btn.innerHTML = '<div class="sound-icon">' + icon + '</div><div class="sound-label">' + label + '</div>';
         
         var key = folder + '/' + file;
@@ -372,6 +393,7 @@ for (var i = 0; i < 16; i++) {
 buildPanel('panel-funky', 'funkybeat', SOUNDS.funky, '🎸');
 buildPanel('panel-drums', 'drumbreak', SOUNDS.drums, '🥁');
 buildPanel('panel-synth', 'synth', SOUNDS.synth, '🎹');
+buildPanel('panel-electic', 'electic', SOUNDS.electic, '✨');
 
 document.getElementById('stopBtn').onclick = stopAll;
 </script>
