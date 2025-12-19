@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MASTER-BEATER</title>
+    <title>BeatMaster Pro G</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -72,9 +72,9 @@
             overflow: hidden;
         }
         
-        .header { text-align: center; padding: 8px 0; }
+        .header { text-align: center; padding: 6px 0; }
         .app-title { 
-            font-size: 1.6em; font-weight: 900; 
+            font-size: 1.4em; font-weight: 900; 
             background: linear-gradient(90deg, #f0f, #0ff, #ff0, #f0f);
             background-size: 300% 100%;
             -webkit-background-clip: text;
@@ -86,17 +86,17 @@
             0% { background-position: 0% 50%; }
             100% { background-position: 300% 50%; }
         }
-        .subtitle { color: #f0f; font-size: 0.55em; margin-top: 2px; text-shadow: 0 0 10px rgba(255,0,255,0.5); }
+        .subtitle { color: #f0f; font-size: 0.5em; margin-top: 2px; text-shadow: 0 0 10px rgba(255,0,255,0.5); }
 
         .beat-row {
             display: flex;
             justify-content: center;
             gap: 4px;
-            padding: 6px 0;
+            padding: 4px 0;
         }
         .beat-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: rgba(255,255,255,0.15);
             border-radius: 50%;
             transition: all 0.1s;
@@ -111,13 +111,13 @@
             display: flex; 
             justify-content: center; 
             gap: 8px; 
-            padding: 6px 0; 
+            padding: 4px 0; 
         }
         .stop-btn { 
             background: linear-gradient(135deg, #ff0050, #ff0080); 
             border: none; border-radius: 8px; 
-            padding: 8px 20px; color: #fff; 
-            font-family: 'Orbitron'; font-size: 0.75em; font-weight: bold; 
+            padding: 6px 16px; color: #fff; 
+            font-family: 'Orbitron'; font-size: 0.65em; font-weight: bold; 
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 0, 100, 0.5);
         }
@@ -125,17 +125,18 @@
         .tab-container {
             display: flex;
             justify-content: center;
-            gap: 5px;
-            padding: 5px 0;
+            gap: 3px;
+            padding: 4px 0;
+            flex-wrap: wrap;
         }
         .tab-btn {
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 6px 8px;
+            border-radius: 6px;
+            padding: 5px 6px;
             color: #fff;
             font-family: 'Orbitron';
-            font-size: 0.5em;
+            font-size: 0.4em;
             font-weight: bold;
             cursor: pointer;
         }
@@ -152,7 +153,7 @@
         .sound-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            gap: 6px; 
+            gap: 5px; 
         }
         
         .sound-btn { 
@@ -164,8 +165,8 @@
             align-items: center; 
             justify-content: center; 
             cursor: pointer; 
-            padding: 12px 5px;
-            min-height: 60px;
+            padding: 10px 5px;
+            min-height: 55px;
         }
         
         .sound-btn.on {
@@ -180,10 +181,10 @@
             to { opacity: 1; }
         }
         
-        .sound-icon { font-size: 1.3em; }
-        .sound-label { font-size: 0.4em; margin-top: 3px; text-align: center; }
+        .sound-icon { font-size: 1.2em; }
+        .sound-label { font-size: 0.4em; margin-top: 2px; text-align: center; }
 
-        .footer { text-align: center; padding: 5px; font-size: 0.45em; color: rgba(255,0,255,0.6); }
+        .footer { text-align: center; padding: 4px; font-size: 0.4em; color: rgba(255,0,255,0.6); }
     </style>
 </head>
 <body>
@@ -195,7 +196,7 @@
     
 <div class="container">
     <div class="header">
-        <div class="app-title">🎛️ MASTER-BEATER</div>
+        <div class="app-title">🎛️ BeatMaster Pro G</div>
         <div class="subtitle">TAP TO LOOP • TAP AGAIN TO STOP • MIX!</div>
     </div>
 
@@ -206,16 +207,20 @@
     </div>
     
     <div class="tab-container">
-        <button class="tab-btn active" onclick="showTab('funky')">🎸 FUNKY</button>
-        <button class="tab-btn" onclick="showTab('drums')">🥁 DRUMS</button>
-        <button class="tab-btn" onclick="showTab('synth')">🎹 SYNTH</button>
-        <button class="tab-btn" onclick="showTab('electic')">✨ ELECTIC</button>
+        <button class="tab-btn active" onclick="showTab('bangbeat')">💥 BEAT</button>
+        <button class="tab-btn" onclick="showTab('backbeat')">🎵 BACKUP</button>
+        <button class="tab-btn" onclick="showTab('backfillbeat')">🎶 RIFF</button>
+        <button class="tab-btn" onclick="showTab('funkybeat')">🎸 FUNKY</button>
+        <button class="tab-btn" onclick="showTab('drumbeat')">🥁 DRUM</button>
+        <button class="tab-btn" onclick="showTab('voicesbeat')">🎤 VOICES</button>
     </div>
 
-    <div class="sound-panel active" id="panel-funky"></div>
-    <div class="sound-panel" id="panel-drums"></div>
-    <div class="sound-panel" id="panel-synth"></div>
-    <div class="sound-panel" id="panel-electic"></div>
+    <div class="sound-panel active" id="panel-bangbeat"></div>
+    <div class="sound-panel" id="panel-backbeat"></div>
+    <div class="sound-panel" id="panel-backfillbeat"></div>
+    <div class="sound-panel" id="panel-funkybeat"></div>
+    <div class="sound-panel" id="panel-drumbeat"></div>
+    <div class="sound-panel" id="panel-voicesbeat"></div>
 
     <div class="footer">NOWAK VIBE CONSULTING</div>
 </div>
@@ -223,72 +228,15 @@
 <script>
 var BASE = 'https://patkers.github.io/barhorn-hero/sounds/';
 
-// All the sounds
-var SOUNDS = {
-    funky: [],
-    drums: [
-        '1-drum-break-86-bpm.wav',
-        '2-drum-break-90-bpm.wav',
-        '3-drum-break-102-bpm.wav',
-        '4-drum-break-106-bpm.wav',
-        '5-drum-break-108-bpm.wav',
-        '6-drum-break-109-bpm.wav',
-        '7-drum-break-110-bpm.wav',
-        '8-drum-break-114-bpm.wav',
-        '9-drum-break-114-bpm.wav',
-        '10-drum-break-116-bpm.wav',
-        '11-drum-break-120-bpm.wav',
-        '12-drum-break-120-bpm.wav',
-        '13-drum-break-123-bpm.wav',
-        '14-drum-break-123-bpm.wav',
-        '15-drum-break-126-bpm.wav',
-        '16-drum-break-127-bpm.wav',
-        '17-drum-break-127-bpm.wav',
-        '18-drum-break-127-bpm.wav',
-        '19-drum-break-127-bpm.wav',
-        '20-drum-break-127-bpm.wav',
-        '22-drum-break-130-bpm.wav',
-        '23-drum-break-130-bpm.wav',
-        '25-drum-break-131-bpm.wav',
-        '26-drum-break-135-bpm.wav',
-        '27-drum-break-135-bpm.wav',
-        '28-drum-break-140-bpm.wav',
-        '29-drum-break-140-bpm.wav',
-        '30-drum-break-146-bpm.wav'
-    ],
-    synth: [
-        'Korg MS2000 synth loop 120 bpm-1.wav',
-        'Korg MS2000 synth loop 120 bpm-2.wav',
-        'Korg MS2000 synth loop 120 bpm-3.wav',
-        'Korg MS2000 synth loop 120 bpm-4.wav',
-        'Korg MS2000 synth loop 120 bpm-5.wav',
-        'Korg MS2000 synth loop 120 bpm-6.wav',
-        'Korg MS2000 synth loop 120 bpm-7.wav',
-        'Korg MS2000 synth loop 120 bpm-8.wav',
-        'Korg MS2000 synth loop 120 bpm-9.wav',
-        'Korg MS2000 synth loop 120 bpm-10.wav',
-        'Korg MS2000 synth loop 120 bpm-11.wav',
-        'Korg MS2000 synth loop 120 bpm-12.wav',
-        'Korg MS2000 synth loop 120 bpm-13.wav',
-        'Korg MS2000 synth loop 120 bpm-20.wav'
-    ],
-    electic: [
-        'Synth Pad - Soft mystical 2.wav',
-        'Synth Pad - Soft mystical 3.wav',
-        'Synth Pad - Soft mystical 4 - Hi notes.wav',
-        'Synth Pad - Soft mystical 5 - Low notes.wav',
-        'Synth Pad - Soft mystical 6.wav',
-        'Synth Pad - Soft mystical 7 - Hi notes.wav',
-        'Synth Pad - Soft mystical 8.wav',
-        'Synth Pad - Soft mystical 9.wav',
-        'Synth pad - Mystycal bells.wav'
-    ]
+// 6 folders with file counts and extensions
+var FOLDERS = {
+    backbeat:     { count: 18, ext: 'mp3', icon: '🎵' },
+    backfillbeat: { count: 24, ext: 'mp3', icon: '🎶' },
+    bangbeat:     { count: 24, ext: 'mp3', icon: '💥' },
+    drumbeat:     { count: 27, ext: 'wav', icon: '🥁' },
+    funkybeat:    { count: 27, ext: 'wav', icon: '🎸' },
+    voicesbeat:   { count: 18, ext: 'mp3', icon: '🎤' }
 };
-
-// Generate funky beats 1-27
-for (var i = 1; i <= 27; i++) {
-    SOUNDS.funky.push('Funky beat ' + i + '.wav');
-}
 
 // Store playing audio
 var playing = {};
@@ -319,9 +267,9 @@ function flashDot() {
     setTimeout(function() { dot.classList.remove('on'); }, 150);
 }
 
-function toggle(file, folder, btn) {
+function toggle(folder, file, btn) {
     var key = folder + '/' + file;
-    var url = BASE + folder + '/' + encodeURIComponent(file);
+    var url = BASE + folder + '/' + file;
     
     if (playing[key]) {
         // STOP this sound
@@ -353,36 +301,33 @@ function stopAll() {
     setTimeout(function() { dots.forEach(function(d) { d.classList.remove('on'); }); }, 200);
 }
 
-function buildPanel(panelId, folder, files, icon) {
-    var panel = document.getElementById(panelId);
+function buildPanel(folder, info) {
+    var panel = document.getElementById('panel-' + folder);
     var grid = document.createElement('div');
     grid.className = 'sound-grid';
     
-    files.forEach(function(file, idx) {
+    for (var i = 1; i <= info.count; i++) {
+        var num = i < 10 ? '0' + i : '' + i;
+        var file = 'beat' + num + '.' + info.ext;
+        
         var btn = document.createElement('div');
         btn.className = 'sound-btn';
-        var label = file.replace('.wav', '')
-            .replace('Funky beat ', 'FUNKY ')
-            .replace('Korg MS2000 synth loop 120 bpm-', 'KORG ')
-            .replace(/-drum-break-/g, ' BPM ')
-            .replace(/^\d+-/, '')
-            .replace('Synth Pad - Soft mystical ', 'MYSTIC ')
-            .replace('Synth pad - Mystycal bells', 'BELLS')
-            .replace(' - Hi notes', ' HI')
-            .replace(' - Low notes', ' LO');
-        btn.innerHTML = '<div class="sound-icon">' + icon + '</div><div class="sound-label">' + label + '</div>';
+        btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
         
         var key = folder + '/' + file;
         buttons[key] = btn;
         
-        btn.onclick = function() { toggle(file, folder, btn); };
+        (function(f, fl, b) {
+            btn.onclick = function() { toggle(f, fl, b); };
+        })(folder, file, btn);
+        
         grid.appendChild(btn);
-    });
+    }
     
     panel.appendChild(grid);
 }
 
-// Build everything
+// Build beat dots
 for (var i = 0; i < 16; i++) {
     var dot = document.createElement('div');
     dot.className = 'beat-dot';
@@ -390,10 +335,10 @@ for (var i = 0; i < 16; i++) {
     dots.push(dot);
 }
 
-buildPanel('panel-funky', 'funkybeat', SOUNDS.funky, '🎸');
-buildPanel('panel-drums', 'drumbreak', SOUNDS.drums, '🥁');
-buildPanel('panel-synth', 'synth', SOUNDS.synth, '🎹');
-buildPanel('panel-electic', 'electic', SOUNDS.electic, '✨');
+// Build all panels
+Object.keys(FOLDERS).forEach(function(folder) {
+    buildPanel(folder, FOLDERS[folder]);
+});
 
 document.getElementById('stopBtn').onclick = stopAll;
 </script>
