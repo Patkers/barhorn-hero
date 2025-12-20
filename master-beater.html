@@ -116,10 +116,34 @@
         .stop-btn { 
             background: linear-gradient(135deg, #ff0050, #ff0080); 
             border: none; border-radius: 8px; 
-            padding: 6px 16px; color: #fff; 
-            font-family: 'Orbitron'; font-size: 0.65em; font-weight: bold; 
+            padding: 6px 12px; color: #fff; 
+            font-family: 'Orbitron'; font-size: 0.55em; font-weight: bold; 
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 0, 100, 0.5);
+        }
+        .save-btn { 
+            background: linear-gradient(135deg, #00cc66, #00aa55); 
+            border: none; border-radius: 8px; 
+            padding: 6px 12px; color: #fff; 
+            font-family: 'Orbitron'; font-size: 0.55em; font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 200, 100, 0.5);
+        }
+        .load-select {
+            background: rgba(0,150,255,0.3);
+            border: 2px solid #0af;
+            border-radius: 8px;
+            padding: 5px 8px;
+            color: #fff;
+            font-family: 'Orbitron';
+            font-size: 0.5em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.4);
+        }
+        .load-select option {
+            background: #1a1a2e;
+            color: #fff;
         }
         
         .tab-container {
@@ -204,6 +228,10 @@
 
     <div class="controls">
         <button class="stop-btn" id="stopBtn">🛑 STOP ALL</button>
+        <button class="save-btn" id="saveBtn">💾 SAVE</button>
+        <select class="load-select" id="loadSelect">
+            <option value="">📂 Load Mix...</option>
+        </select>
     </div>
     
     <div class="tab-container">
@@ -341,6 +369,120 @@ Object.keys(FOLDERS).forEach(function(folder) {
 });
 
 document.getElementById('stopBtn').onclick = stopAll;
+
+// SAVE/LOAD FUNCTIONALITY
+function getPlayingSounds() {
+    return Object.keys(playing).filter(function(key) {
+        return playing[key] !== null;
+    });
+}
+
+function saveMix() {
+    var sounds = getPlayingSounds();
+    if (sounds.length === 0) {
+        alert('No sounds playing! Start some beats first.');
+        return;
+    }
+    
+    var name = prompt('Name your mix:', 'Mix ' + (getSavedMixes().length + 1));
+    if (!name) return;
+    
+    var mixes = getSavedMixes();
+    mixes.push({ name: name, sounds: sounds });
+    localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
+    
+    updateLoadDropdown();
+    alert('Saved "' + name + '" with ' + sounds.length + ' sounds!');
+}
+
+function getSavedMixes() {
+    var saved = localStorage.getItem('beatmaster_mixes');
+    return saved ? JSON.parse(saved) : [];
+}
+
+function updateLoadDropdown() {
+    var select = document.getElementById('loadSelect');
+    var mixes = getSavedMixes();
+    
+    select.innerHTML = '<option value="">📂 Load Mix...</option>';
+    mixes.forEach(function(mix, index) {
+        var opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = mix.name + ' (' + mix.sounds.length + ')';
+        select.appendChild(opt);
+    });
+    
+    if (mixes.length > 0) {
+        var delOpt = document.createElement('option');
+        delOpt.value = 'delete';
+        delOpt.textContent = '🗑️ Delete a mix...';
+        select.appendChild(delOpt);
+    }
+}
+
+function loadMix(index) {
+    var mixes = getSavedMixes();
+    var mix = mixes[index];
+    if (!mix) return;
+    
+    // Stop all current sounds
+    stopAll();
+    
+    // Small delay then start saved sounds
+    setTimeout(function() {
+        mix.sounds.forEach(function(key) {
+            var btn = buttons[key];
+            if (btn) {
+                var parts = key.split('/');
+                var folder = parts[0];
+                var file = parts[1];
+                
+                var url = BASE + folder + '/' + file;
+                var audio = new Audio(url);
+                audio.loop = true;
+                playing[key] = audio;
+                audio.play();
+                btn.classList.add('on');
+            }
+        });
+        flashDot();
+    }, 100);
+}
+
+function deleteMix() {
+    var mixes = getSavedMixes();
+    if (mixes.length === 0) return;
+    
+    var list = mixes.map(function(m, i) { return (i + 1) + '. ' + m.name; }).join('\n');
+    var num = prompt('Enter number to delete:\n\n' + list);
+    
+    if (num && !isNaN(num)) {
+        var idx = parseInt(num) - 1;
+        if (idx >= 0 && idx < mixes.length) {
+            var name = mixes[idx].name;
+            mixes.splice(idx, 1);
+            localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
+            updateLoadDropdown();
+            alert('Deleted "' + name + '"');
+        }
+    }
+}
+
+document.getElementById('saveBtn').onclick = saveMix;
+
+document.getElementById('loadSelect').onchange = function() {
+    var val = this.value;
+    if (val === '') return;
+    if (val === 'delete') {
+        deleteMix();
+    } else {
+        loadMix(parseInt(val));
+    }
+    this.value = '';
+};
+
+// Load saved mixes on startup
+updateLoadDropdown();
 </script>
 </body>
 </html>
