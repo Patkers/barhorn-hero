@@ -73,37 +73,35 @@
             right: 0;
             background: rgba(10, 10, 26, 0.95);
             border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-            padding: 10px 20px;
+            padding: 12px 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            gap: 15px;
             z-index: 100;
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
         }
         
         .nav-brand {
-            font-size: 0.9em;
-            font-weight: 900;
-            color: #0ff;
-            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+            display: none;
         }
         
         .nav-links {
             display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: nowrap;
         }
         
         .nav-link {
             color: #fff;
             text-decoration: none;
-            font-size: 0.45em;
-            padding: 6px 10px;
+            font-size: 0.5em;
+            padding: 8px 12px;
             border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 15px;
+            border-radius: 20px;
             background: rgba(255,255,255,0.1);
             transition: all 0.3s;
+            white-space: nowrap;
         }
         
         .nav-link:hover {
@@ -117,12 +115,12 @@
             z-index: 1;
             max-width: 800px;
             margin: 0 auto;
-            padding: 70px 20px 20px;
+            padding: 60px 20px 20px;
         }
         
         .header {
             text-align: center;
-            padding: 40px 0 30px;
+            padding: 20px 0 30px;
         }
         
         .main-title { 
@@ -340,7 +338,6 @@
     <div class="grid-overlay"></div>
     
     <nav class="nav-bar">
-        <div class="nav-brand">🎛️ BEATMASTER</div>
         <div class="nav-links">
             <a href="polka-master.html" class="nav-link">🪗 Polka</a>
             <a href="swing-master.html" class="nav-link">🎷 Swing</a>
