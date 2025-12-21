@@ -45,12 +45,58 @@
             pointer-events: none;
         }
 
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 26, 0.95);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        }
+        
+        .nav-brand {
+            font-size: 0.9em;
+            font-weight: 900;
+            color: #0ff;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.45em;
+            padding: 6px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: rgba(0,255,255,0.3);
+            border-color: #0ff;
+            box-shadow: 0 0 15px rgba(0,255,255,0.5);
+        }
+
         .container { 
             position: relative;
             z-index: 1;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 70px 20px 20px;
         }
         
         .header {
@@ -271,6 +317,17 @@
 <body>
     <div class="bg-gradient"></div>
     <div class="grid-overlay"></div>
+    
+    <nav class="nav-bar">
+        <div class="nav-brand">🎛️ BEATMASTER</div>
+        <div class="nav-links">
+            <a href="polka-master.html" class="nav-link">🪗 Polka</a>
+            <a href="swing-master.html" class="nav-link">🎷 Swing</a>
+            <a href="master-beater.html" class="nav-link">🎛️ Pro G</a>
+            <a href="sleep-master.html" class="nav-link">😴 Sleep</a>
+            <a href="index.html" class="nav-link">📯 BarHorn</a>
+        </div>
+    </nav>
     
     <div class="container">
         <div class="header">
