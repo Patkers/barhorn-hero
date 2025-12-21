@@ -209,6 +209,129 @@
         .sound-label { font-size: 0.4em; margin-top: 2px; text-align: center; }
 
         .footer { text-align: center; padding: 4px; font-size: 0.4em; color: rgba(255,0,255,0.6); }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        
+        .modal-box {
+            background: linear-gradient(135deg, #1a0a2e 0%, #0a1a2e 100%);
+            border: 2px solid #0ff;
+            border-radius: 15px;
+            padding: 20px;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 0 30px rgba(0,255,255,0.4), 0 0 60px rgba(255,0,255,0.2);
+            animation: modalPop 0.2s ease-out;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #0ff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+        
+        .modal-body {
+            margin-bottom: 15px;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #f0f;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            text-align: center;
+            outline: none;
+        }
+        .modal-input:focus {
+            border-color: #0ff;
+            box-shadow: 0 0 15px rgba(0,255,255,0.4);
+        }
+        .modal-input::placeholder { color: rgba(255,255,255,0.4); }
+        
+        .modal-message {
+            color: #fff;
+            text-align: center;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .modal-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        
+        .modal-list-item {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,0,255,0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 0.75em;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-list-item:hover {
+            border-color: #f0f;
+            background: rgba(255,0,255,0.2);
+        }
+        .modal-list-item .mix-name { font-weight: bold; color: #0ff; }
+        .modal-list-item .mix-count { color: #f0f; font-size: 0.9em; }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #0ff, #0aa);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0,255,255,0.5);
+        }
+        .modal-btn-cancel {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .modal-btn-delete {
+            background: linear-gradient(135deg, #ff0050, #aa0030);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255,0,80,0.5);
+        }
     </style>
 </head>
 <body>
@@ -241,6 +364,7 @@
         <button class="tab-btn" onclick="showTab('backfillbeat')">🎶 RIFF</button>
         <button class="tab-btn" onclick="showTab('funkybeat')">🎸 FUNKY</button>
         <button class="tab-btn" onclick="showTab('drumbeat')">🥁 DRUM</button>
+        <button class="tab-btn" onclick="showTab('tambeat')">🪘 TAMB</button>
     </div>
 
     <div class="sound-panel active" id="panel-voicesbeat"></div>
@@ -249,21 +373,32 @@
     <div class="sound-panel" id="panel-backfillbeat"></div>
     <div class="sound-panel" id="panel-funkybeat"></div>
     <div class="sound-panel" id="panel-drumbeat"></div>
+    <div class="sound-panel" id="panel-tambeat"></div>
 
     <div class="footer">NOWAK VIBE CONSULTING</div>
+</div>
+
+<!-- Custom Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box" id="modalBox">
+        <div class="modal-title" id="modalTitle">Save Mix</div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-buttons" id="modalButtons"></div>
+    </div>
 </div>
 
 <script>
 var BASE = 'https://patkers.github.io/barhorn-hero/sounds/';
 
-// 6 folders with file counts and extensions
+// 7 folders with file counts and extensions
 var FOLDERS = {
     backbeat:     { count: 18, ext: 'mp3', icon: '🎵' },
     backfillbeat: { count: 24, ext: 'mp3', icon: '🎶' },
     bangbeat:     { count: 24, ext: 'mp3', icon: '💥' },
     drumbeat:     { count: 27, ext: 'wav', icon: '🥁' },
     funkybeat:    { count: 27, ext: 'wav', icon: '🎸' },
-    voicesbeat:   { count: 18, ext: 'mp3', icon: '🎤' }
+    voicesbeat:   { count: 18, ext: 'mp3', icon: '🎤' },
+    tambeat:      { count: 18, ext: 'mp3', icon: '🪘' }
 };
 
 // Store playing audio
@@ -370,29 +505,44 @@ Object.keys(FOLDERS).forEach(function(folder) {
 
 document.getElementById('stopBtn').onclick = stopAll;
 
+// MODAL SYSTEM
+var modal = document.getElementById('modalOverlay');
+var modalTitle = document.getElementById('modalTitle');
+var modalBody = document.getElementById('modalBody');
+var modalButtons = document.getElementById('modalButtons');
+
+function showModal(title, bodyHTML, buttons) {
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyHTML;
+    modalButtons.innerHTML = '';
+    
+    buttons.forEach(function(btn) {
+        var b = document.createElement('button');
+        b.className = 'modal-btn ' + (btn.class || '');
+        b.textContent = btn.text;
+        b.onclick = function() {
+            hideModal();
+            if (btn.action) btn.action();
+        };
+        modalButtons.appendChild(b);
+    });
+    
+    modal.classList.add('show');
+}
+
+function hideModal() {
+    modal.classList.remove('show');
+}
+
+modal.onclick = function(e) {
+    if (e.target === modal) hideModal();
+};
+
 // SAVE/LOAD FUNCTIONALITY
 function getPlayingSounds() {
     return Object.keys(playing).filter(function(key) {
         return playing[key] !== null;
     });
-}
-
-function saveMix() {
-    var sounds = getPlayingSounds();
-    if (sounds.length === 0) {
-        alert('No sounds playing! Start some beats first.');
-        return;
-    }
-    
-    var name = prompt('Name your mix:', 'Mix ' + (getSavedMixes().length + 1));
-    if (!name) return;
-    
-    var mixes = getSavedMixes();
-    mixes.push({ name: name, sounds: sounds });
-    localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
-    
-    updateLoadDropdown();
-    alert('Saved "' + name + '" with ' + sounds.length + ' sounds!');
 }
 
 function getSavedMixes() {
@@ -420,15 +570,96 @@ function updateLoadDropdown() {
     }
 }
 
+function saveMix() {
+    var sounds = getPlayingSounds();
+    if (sounds.length === 0) {
+        showModal('⚠️ Oops!', '<div class="modal-message">No sounds playing!<br>Start some beats first.</div>', [
+            { text: 'OK', class: 'modal-btn-confirm' }
+        ]);
+        return;
+    }
+    
+    var defaultName = 'Mix ' + (getSavedMixes().length + 1);
+    showModal('💾 Save Mix', '<input type="text" class="modal-input" id="mixNameInput" placeholder="Enter mix name..." value="' + defaultName + '">', [
+        { text: 'Cancel', class: 'modal-btn-cancel' },
+        { text: 'Save', class: 'modal-btn-confirm', action: function() {
+            var name = document.getElementById('mixNameInput').value.trim();
+            if (!name) name = defaultName;
+            
+            var mixes = getSavedMixes();
+            mixes.push({ name: name, sounds: sounds });
+            localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
+            updateLoadDropdown();
+            
+            showModal('✅ Saved!', '<div class="modal-message">"' + name + '"<br>with ' + sounds.length + ' sounds</div>', [
+                { text: 'OK', class: 'modal-btn-confirm' }
+            ]);
+        }}
+    ]);
+    
+    setTimeout(function() {
+        var input = document.getElementById('mixNameInput');
+        if (input) { input.focus(); input.select(); }
+    }, 100);
+}
+
+function showDeleteModal() {
+    var mixes = getSavedMixes();
+    if (mixes.length === 0) {
+        showModal('🗑️ Delete Mix', '<div class="modal-message">No saved mixes to delete.</div>', [
+            { text: 'OK', class: 'modal-btn-confirm' }
+        ]);
+        return;
+    }
+    
+    var listHTML = '<div class="modal-list">';
+    mixes.forEach(function(mix, index) {
+        listHTML += '<div class="modal-list-item" data-index="' + index + '">';
+        listHTML += '<span class="mix-name">' + mix.name + '</span>';
+        listHTML += '<span class="mix-count">' + mix.sounds.length + ' sounds</span>';
+        listHTML += '</div>';
+    });
+    listHTML += '</div>';
+    
+    showModal('🗑️ Delete Mix', listHTML, [
+        { text: 'Cancel', class: 'modal-btn-cancel' }
+    ]);
+    
+    setTimeout(function() {
+        document.querySelectorAll('.modal-list-item').forEach(function(item) {
+            item.onclick = function() {
+                var idx = parseInt(this.dataset.index);
+                confirmDelete(idx);
+            };
+        });
+    }, 50);
+}
+
+function confirmDelete(index) {
+    var mixes = getSavedMixes();
+    var mix = mixes[index];
+    
+    showModal('⚠️ Delete?', '<div class="modal-message">Delete "' + mix.name + '"?<br>This cannot be undone.</div>', [
+        { text: 'Cancel', class: 'modal-btn-cancel' },
+        { text: 'Delete', class: 'modal-btn-delete', action: function() {
+            mixes.splice(index, 1);
+            localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
+            updateLoadDropdown();
+            
+            showModal('✅ Deleted!', '<div class="modal-message">"' + mix.name + '" removed.</div>', [
+                { text: 'OK', class: 'modal-btn-confirm' }
+            ]);
+        }}
+    ]);
+}
+
 function loadMix(index) {
     var mixes = getSavedMixes();
     var mix = mixes[index];
     if (!mix) return;
     
-    // Stop all current sounds
     stopAll();
     
-    // Small delay then start saved sounds
     setTimeout(function() {
         mix.sounds.forEach(function(key) {
             var btn = buttons[key];
@@ -449,39 +680,19 @@ function loadMix(index) {
     }, 100);
 }
 
-function deleteMix() {
-    var mixes = getSavedMixes();
-    if (mixes.length === 0) return;
-    
-    var list = mixes.map(function(m, i) { return (i + 1) + '. ' + m.name; }).join('\n');
-    var num = prompt('Enter number to delete:\n\n' + list);
-    
-    if (num && !isNaN(num)) {
-        var idx = parseInt(num) - 1;
-        if (idx >= 0 && idx < mixes.length) {
-            var name = mixes[idx].name;
-            mixes.splice(idx, 1);
-            localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
-            updateLoadDropdown();
-            alert('Deleted "' + name + '"');
-        }
-    }
-}
-
 document.getElementById('saveBtn').onclick = saveMix;
 
 document.getElementById('loadSelect').onchange = function() {
     var val = this.value;
+    this.value = '';
     if (val === '') return;
     if (val === 'delete') {
-        deleteMix();
+        showDeleteModal();
     } else {
         loadMix(parseInt(val));
     }
-    this.value = '';
 };
 
-// Load saved mixes on startup
 updateLoadDropdown();
 </script>
 </body>
