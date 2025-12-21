@@ -511,18 +511,18 @@ var modalTitle = document.getElementById('modalTitle');
 var modalBody = document.getElementById('modalBody');
 var modalButtons = document.getElementById('modalButtons');
 
-function showModal(title, bodyHTML, buttons) {
+function showModal(title, bodyHTML, buttonsConfig) {
     modalTitle.textContent = title;
     modalBody.innerHTML = bodyHTML;
     modalButtons.innerHTML = '';
     
-    buttons.forEach(function(btn) {
+    buttonsConfig.forEach(function(btn) {
         var b = document.createElement('button');
         b.className = 'modal-btn ' + (btn.class || '');
         b.textContent = btn.text;
         b.onclick = function() {
-            hideModal();
             if (btn.action) btn.action();
+            if (!btn.keepOpen) hideModal();
         };
         modalButtons.appendChild(b);
     });
@@ -582,8 +582,9 @@ function saveMix() {
     var defaultName = 'Mix ' + (getSavedMixes().length + 1);
     showModal('💾 Save Mix', '<input type="text" class="modal-input" id="mixNameInput" placeholder="Enter mix name..." value="' + defaultName + '">', [
         { text: 'Cancel', class: 'modal-btn-cancel' },
-        { text: 'Save', class: 'modal-btn-confirm', action: function() {
-            var name = document.getElementById('mixNameInput').value.trim();
+        { text: 'Save', class: 'modal-btn-confirm', keepOpen: true, action: function() {
+            var input = document.getElementById('mixNameInput');
+            var name = input ? input.value.trim() : defaultName;
             if (!name) name = defaultName;
             
             var mixes = getSavedMixes();
@@ -591,9 +592,12 @@ function saveMix() {
             localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
             updateLoadDropdown();
             
-            showModal('✅ Saved!', '<div class="modal-message">"' + name + '"<br>with ' + sounds.length + ' sounds</div>', [
-                { text: 'OK', class: 'modal-btn-confirm' }
-            ]);
+            hideModal();
+            setTimeout(function() {
+                showModal('✅ Saved!', '<div class="modal-message">"' + name + '"<br>with ' + sounds.length + ' sounds</div>', [
+                    { text: 'OK', class: 'modal-btn-confirm' }
+                ]);
+            }, 100);
         }}
     ]);
     
@@ -646,9 +650,11 @@ function confirmDelete(index) {
             localStorage.setItem('beatmaster_mixes', JSON.stringify(mixes));
             updateLoadDropdown();
             
-            showModal('✅ Deleted!', '<div class="modal-message">"' + mix.name + '" removed.</div>', [
-                { text: 'OK', class: 'modal-btn-confirm' }
-            ]);
+            setTimeout(function() {
+                showModal('✅ Deleted!', '<div class="modal-message">"' + mix.name + '" removed.</div>', [
+                    { text: 'OK', class: 'modal-btn-confirm' }
+                ]);
+            }, 100);
         }}
     ]);
 }
