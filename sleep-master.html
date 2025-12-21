@@ -1,1 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SleepMaster ZZZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; touch-action: manipulation; }
+        
+        body { 
+            font-family: 'Orbitron', sans-serif; 
+            color: #fff; 
+            height: 100dvh; 
+            display: flex; 
+            flex-direction: column;
+            background: #050510;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse at 0% 0%, rgba(20, 40, 100, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 0%, rgba(40, 20, 80, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(20, 50, 100, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 100%, rgba(30, 30, 80, 0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #050510 0%, #0a1025 50%, #050520 100%);
+            animation: bgShift 12s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes bgShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
+        
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: orbFloat 8s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .orb1 { width: 250px; height: 250px; background: rgba(50, 100, 200, 0.3); top: -80px; left: -80px; }
+        .orb2 { width: 200px; height: 200px; background: rgba(80, 50, 150, 0.3); bottom: -60px; right: -60px; animation-delay: -4s; }
+        .orb3 { width: 180px; height: 180px; background: rgba(40, 80, 150, 0.2); top: 40%; right: 10%; animation-delay: -2s; }
+        
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            50% { transform: translate(15px, -15px) scale(1.1); opacity: 0.6; }
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(100, 150, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 150, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container { 
+            flex: 1; display: flex; flex-direction: column; 
+            padding: 8px; width: 100%; max-width: 100%;
+            position: relative; z-index: 1;
+            overflow: hidden;
+        }
+        
+        .header { text-align: center; padding: 8px 0; }
+        .app-title { 
+            font-size: 1.5em; font-weight: 900; 
+            background: linear-gradient(90deg, #4080ff, #8060ff, #4080ff, #8060ff, #4080ff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 4s linear infinite;
+        }
+        @keyframes titleShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        .subtitle { color: #6080c0; font-size: 0.5em; margin-top: 2px; text-shadow: 0 0 10px rgba(80,120,200,0.5); }
+
+        .beat-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            padding: 4px 0;
+        }
+        .beat-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.1s;
+        }
+        .beat-dot.on {
+            background: #6090ff;
+            box-shadow: 0 0 10px #6090ff, 0 0 20px #6090ff;
+            transform: scale(1.4);
+        }
+
+        .controls { 
+            display: flex; 
+            justify-content: center; 
+            gap: 8px; 
+            padding: 6px 0; 
+        }
+        .stop-btn { 
+            background: linear-gradient(135deg, #ff0050, #ff0080); 
+            border: none; border-radius: 8px; 
+            padding: 8px 12px; color: #fff; 
+            font-family: 'Orbitron'; font-size: 0.55em; font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 100, 0.5);
+        }
+        .save-btn { 
+            background: linear-gradient(135deg, #00cc66, #00aa55); 
+            border: none; border-radius: 8px; 
+            padding: 8px 12px; color: #fff; 
+            font-family: 'Orbitron'; font-size: 0.55em; font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 200, 100, 0.5);
+        }
+        .load-select {
+            background: rgba(0,150,255,0.3);
+            border: 2px solid #0af;
+            border-radius: 8px;
+            padding: 6px 8px;
+            color: #fff;
+            font-family: 'Orbitron';
+            font-size: 0.5em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.4);
+        }
+        .load-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            padding: 5px 0;
+        }
+        .tab-btn {
+            background: rgba(80,120,200,0.2);
+            border: 2px solid rgba(80,120,200,0.4);
+            border-radius: 8px;
+            padding: 8px 15px;
+            color: #fff;
+            font-family: 'Orbitron';
+            font-size: 0.5em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: rgba(80,120,200,0.4);
+            border-color: #6090ff;
+            box-shadow: 0 0 15px rgba(80,120,200,0.4);
+        }
+
+        .sound-panel {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .sound-panel.active { display: block; }
+        
+        .sound-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 6px; 
+        }
+        
+        .sound-btn { 
+            background: rgba(255,255,255,0.05); 
+            border: 2px solid rgba(80, 120, 200, 0.3); 
+            border-radius: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            padding: 12px 5px;
+            min-height: 60px;
+        }
+        
+        .sound-btn.on {
+            background: rgba(80,120,200,0.4);
+            border-color: #6090ff;
+            box-shadow: 0 0 20px rgba(80,120,200,0.6);
+            animation: pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+        
+        .sound-icon { font-size: 1.3em; }
+        .sound-label { font-size: 0.45em; margin-top: 3px; text-align: center; }
+
+        .footer { text-align: center; padding: 5px; font-size: 0.4em; color: rgba(80,120,200,0.6); }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        
+        .modal-box {
+            background: linear-gradient(135deg, #0a1025 0%, #050520 100%);
+            border: 2px solid #6090ff;
+            border-radius: 15px;
+            padding: 20px;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 0 30px rgba(80,120,200,0.4), 0 0 60px rgba(60,100,180,0.2);
+            animation: modalPop 0.2s ease-out;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #6090ff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(80,120,200,0.5);
+        }
+        
+        .modal-body { margin-bottom: 15px; }
+        
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #6090ff;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            text-align: center;
+            outline: none;
+        }
+        .modal-input:focus {
+            border-color: #80a0ff;
+            box-shadow: 0 0 15px rgba(100,150,255,0.4);
+        }
+        .modal-input::placeholder { color: rgba(255,255,255,0.4); }
+        
+        .modal-message {
+            color: #fff;
+            text-align: center;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .modal-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        
+        .modal-list-item {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(80,120,200,0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 0.75em;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-list-item:hover {
+            border-color: #6090ff;
+            background: rgba(80,120,200,0.2);
+        }
+        .modal-list-item .mix-name { font-weight: bold; color: #6090ff; }
+        .modal-list-item .mix-count { color: #80a0ff; font-size: 0.9em; }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #6090ff, #4070cc);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(80,120,200,0.5);
+        }
+        .modal-btn-cancel {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .modal-btn-delete {
+            background: linear-gradient(135deg, #ff0050, #aa0030);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255,0,80,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="grid-overlay"></div>
+    
+<div class="container">
+    <div class="header">
+        <div class="app-title">😴 SleepMaster ZZZ</div>
+        <div class="subtitle">TAP TO LOOP • TAP AGAIN TO STOP • RELAX!</div>
+    </div>
+
+    <div class="beat-row" id="beatDots"></div>
+
+    <div class="controls">
+        <button class="stop-btn" id="stopBtn">🛑 STOP ALL</button>
+        <button class="save-btn" id="saveBtn">💾 SAVE</button>
+        <select class="load-select" id="loadSelect">
+            <option value="">📂 Load Mix...</option>
+        </select>
+    </div>
+    
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="showTab('sounds')">🌙 SOUNDS</button>
+        <button class="tab-btn" onclick="showTab('relax')">😌 RELAX</button>
+    </div>
+
+    <div class="sound-panel active" id="panel-sounds"></div>
+    <div class="sound-panel" id="panel-relax"></div>
+
+    <div class="footer">NOWAK VIBE CONSULTING</div>
+</div>
+
+<!-- Custom Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box" id="modalBox">
+        <div class="modal-title" id="modalTitle">Save Mix</div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-buttons" id="modalButtons"></div>
+    </div>
+</div>
+
+<script>
+var BASE = 'https://patkers.github.io/barhorn-hero/sounds/';
+
+// Folders with counts and extensions
+var FOLDERS = {
+    sounds: { folder: 'sleepbeat', count: 24, ext: 'mp3', icon: '🌙' },
+    relax:  { folder: 'voicesbeat', count: 18, ext: 'mp3', icon: '😌' }
+};
+
+// Store playing audio
+var playing = {};
+var buttons = {};
+var dots = [];
+
+function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.sound-panel').forEach(function(p) { p.classList.remove('active'); });
+    event.target.classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+    updateButtons();
+}
+
+function updateButtons() {
+    Object.keys(buttons).forEach(function(key) {
+        if (playing[key]) {
+            buttons[key].classList.add('on');
+        } else {
+            buttons[key].classList.remove('on');
+        }
+    });
+}
+
+function flashDot() {
+    var dot = dots[Math.floor(Math.random() * dots.length)];
+    dot.classList.add('on');
+    setTimeout(function() { dot.classList.remove('on'); }, 150);
+}
+
+function toggle(folder, file, btn) {
+    var key = folder + '/' + file;
+    var url = BASE + folder + '/' + file;
+    
+    if (playing[key]) {
+        playing[key].pause();
+        playing[key] = null;
+        delete playing[key];
+        btn.classList.remove('on');
+    } else {
+        var audio = new Audio(url);
+        audio.loop = true;
+        playing[key] = audio;
+        audio.play();
+        btn.classList.add('on');
+        flashDot();
+    }
+}
+
+function stopAll() {
+    Object.keys(playing).forEach(function(key) {
+        if (playing[key]) {
+            playing[key].pause();
+            playing[key] = null;
+        }
+    });
+    playing = {};
+    document.querySelectorAll('.sound-btn').forEach(function(b) { b.classList.remove('on'); });
+    dots.forEach(function(d) { d.classList.add('on'); });
+    setTimeout(function() { dots.forEach(function(d) { d.classList.remove('on'); }); }, 200);
+}
+
+function buildPanel(panelId, info) {
+    var panel = document.getElementById('panel-' + panelId);
+    var grid = document.createElement('div');
+    grid.className = 'sound-grid';
+    
+    if (info.files) {
+        info.files.forEach(function(file, idx) {
+            var num = (idx + 1) < 10 ? '0' + (idx + 1) : '' + (idx + 1);
+            
+            var btn = document.createElement('div');
+            btn.className = 'sound-btn';
+            btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
+            
+            var key = info.folder + '/' + file;
+            buttons[key] = btn;
+            
+            (function(f, fl, b) {
+                btn.onclick = function() { toggle(f, fl, b); };
+            })(info.folder, file, btn);
+            
+            grid.appendChild(btn);
+        });
+    } else {
+        for (var i = 1; i <= info.count; i++) {
+            var num = i < 10 ? '0' + i : '' + i;
+            var file = 'beat' + num + '.' + info.ext;
+            
+            var btn = document.createElement('div');
+            btn.className = 'sound-btn';
+            btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
+            
+            var key = info.folder + '/' + file;
+            buttons[key] = btn;
+            
+            (function(f, fl, b) {
+                btn.onclick = function() { toggle(f, fl, b); };
+            })(info.folder, file, btn);
+            
+            grid.appendChild(btn);
+        }
+    }
+    
+    panel.appendChild(grid);
+}
+
+// Build beat dots
+for (var i = 0; i < 16; i++) {
+    var dot = document.createElement('div');
+    dot.className = 'beat-dot';
+    document.getElementById('beatDots').appendChild(dot);
+    dots.push(dot);
+}
+
+// Build all panels
+Object.keys(FOLDERS).forEach(function(panelId) {
+    buildPanel(panelId, FOLDERS[panelId]);
+});
+
+document.getElementById('stopBtn').onclick = stopAll;
+
+// MODAL SYSTEM
+var modal = document.getElementById('modalOverlay');
+var modalTitle = document.getElementById('modalTitle');
+var modalBody = document.getElementById('modalBody');
+var modalButtons = document.getElementById('modalButtons');
+
+function showModal(title, bodyHTML, buttonsConfig) {
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyHTML;
+    modalButtons.innerHTML = '';
+    
+    buttonsConfig.forEach(function(btn) {
+        var b = document.createElement('button');
+        b.className = 'modal-btn ' + (btn.class || '');
+        b.textContent = btn.text;
+        b.onclick = function() {
+            if (btn.action) btn.action();
+            if (!btn.keepOpen) hideModal();
+        };
+        modalButtons.appendChild(b);
+    });
+    
+    modal.classList.add('show');
+}
+
+function hideModal() {
+    modal.classList.remove('show');
+}
+
+modal.onclick = function(e) {
+    if (e.target === modal) hideModal();
+};
+
+// SAVE/LOAD FUNCTIONALITY
+function getPlayingSounds() {
+    return Object.keys(playing).filter(function(key) {
+        return playing[key] !== null;
+    });
+}
+
+function getSavedMixes() {
+    var saved = localStorage.getItem('sleepmaster_mixes');
+    return saved ? JSON.parse(saved) : [];
+}
+
+function updateLoadDropdown() {
+    var select = document.getElementById('loadSelect');
+    var mixes = getSavedMixes();
+    
+    select.innerHTML = '<option value="">📂 Load Mix...</option>';
+    mixes.forEach(function(mix, index) {
+        var opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = mix.name + ' (' + mix.sounds.length + ')';
+        select.appendChild(opt);
+    });
+    
+    if (mixes.length > 0) {
+        var delOpt = document.createElement('option');
+        delOpt.value = 'delete';
+        delOpt.textContent = '🗑️ Delete a mix...';
+        select.appendChild(delOpt);
+    }
+}
+
+function saveMix() {
+    var sounds = getPlayingSounds();
+    if (sounds.length === 0) {
+        showModal('⚠️ Oops!', '<div class="modal-message">No sounds playing!<br>Start some sounds first.</div>', [
+            { text: 'OK', class: 'modal-btn-confirm' }
+        ]);
+        return;
+    }
+    
+    var defaultName = 'Mix ' + (getSavedMixes().length + 1);
+    showModal('💾 Save Mix', '<input type="text" class="modal-input" id="mixNameInput" placeholder="Enter mix name..." value="' + defaultName + '">', [
+        { text: 'Cancel', class: 'modal-btn-cancel' },
+        { text: 'Save', class: 'modal-btn-confirm', keepOpen: true, action: function() {
+            var input = document.getElementById('mixNameInput');
+            var name = input ? input.value.trim() : defaultName;
+            if (!name) name = defaultName;
+            
+            var mixes = getSavedMixes();
+            mixes.push({ name: name, sounds: sounds });
+            localStorage.setItem('sleepmaster_mixes', JSON.stringify(mixes));
+            updateLoadDropdown();
+            
+            hideModal();
+            setTimeout(function() {
+                showModal('✅ Saved!', '<div class="modal-message">"' + name + '"<br>with ' + sounds.length + ' sounds</div>', [
+                    { text: 'OK', class: 'modal-btn-confirm' }
+                ]);
+            }, 100);
+        }}
+    ]);
+    
+    setTimeout(function() {
+        var input = document.getElementById('mixNameInput');
+        if (input) { input.focus(); input.select(); }
+    }, 100);
+}
+
+function showDeleteModal() {
+    var mixes = getSavedMixes();
+    if (mixes.length === 0) {
+        showModal('🗑️ Delete Mix', '<div class="modal-message">No saved mixes to delete.</div>', [
+            { text: 'OK', class: 'modal-btn-confirm' }
+        ]);
+        return;
+    }
+    
+    var listHTML = '<div class="modal-list">';
+    mixes.forEach(function(mix, index) {
+        listHTML += '<div class="modal-list-item" data-index="' + index + '">';
+        listHTML += '<span class="mix-name">' + mix.name + '</span>';
+        listHTML += '<span class="mix-count">' + mix.sounds.length + ' sounds</span>';
+        listHTML += '</div>';
+    });
+    listHTML += '</div>';
+    
+    showModal('🗑️ Delete Mix', listHTML, [
+        { text: 'Cancel', class: 'modal-btn-cancel' }
+    ]);
+    
+    setTimeout(function() {
+        document.querySelectorAll('.modal-list-item').forEach(function(item) {
+            item.onclick = function() {
+                var idx = parseInt(this.dataset.index);
+                confirmDelete(idx);
+            };
+        });
+    }, 50);
+}
+
+function confirmDelete(index) {
+    var mixes = getSavedMixes();
+    var mix = mixes[index];
+    
+    showModal('⚠️ Delete?', '<div class="modal-message">Delete "' + mix.name + '"?<br>This cannot be undone.</div>', [
+        { text: 'Cancel', class: 'modal-btn-cancel' },
+        { text: 'Delete', class: 'modal-btn-delete', action: function() {
+            mixes.splice(index, 1);
+            localStorage.setItem('sleepmaster_mixes', JSON.stringify(mixes));
+            updateLoadDropdown();
+            
+            setTimeout(function() {
+                showModal('✅ Deleted!', '<div class="modal-message">"' + mix.name + '" removed.</div>', [
+                    { text: 'OK', class: 'modal-btn-confirm' }
+                ]);
+            }, 100);
+        }}
+    ]);
+}
+
+function loadMix(index) {
+    var mixes = getSavedMixes();
+    var mix = mixes[index];
+    if (!mix) return;
+    
+    stopAll();
+    
+    setTimeout(function() {
+        mix.sounds.forEach(function(key) {
+            var btn = buttons[key];
+            if (btn) {
+                var parts = key.split('/');
+                var folder = parts[0];
+                var file = parts[1];
+                
+                var url = BASE + folder + '/' + file;
+                var audio = new Audio(url);
+                audio.loop = true;
+                playing[key] = audio;
+                audio.play();
+                btn.classList.add('on');
+            }
+        });
+        flashDot();
+    }, 100);
+}
+
+document.getElementById('saveBtn').onclick = saveMix;
+
+document.getElementById('loadSelect').onchange = function() {
+    var val = this.value;
+    this.value = '';
+    if (val === '') return;
+    if (val === 'delete') {
+        showDeleteModal();
+    } else {
+        loadMix(parseInt(val));
+    }
+};
+
+updateLoadDropdown();
+</script>
+</body>
+</html>
 
