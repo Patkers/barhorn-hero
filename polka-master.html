@@ -362,11 +362,15 @@
         <button class="tab-btn active" onclick="showTab('songs')">🎵 SONGS</button>
         <button class="tab-btn" onclick="showTab('funky')">🎸 FUNKY</button>
         <button class="tab-btn" onclick="showTab('drum')">🥁 DRUM</button>
+        <button class="tab-btn" onclick="showTab('tambourine')">🪘 TAMBOURINE</button>
+        <button class="tab-btn" onclick="showTab('quackers')">🦆 QUACKERS</button>
     </div>
 
     <div class="sound-panel active" id="panel-songs"></div>
     <div class="sound-panel" id="panel-funky"></div>
     <div class="sound-panel" id="panel-drum"></div>
+    <div class="sound-panel" id="panel-tambourine"></div>
+    <div class="sound-panel" id="panel-quackers"></div>
 
     <div class="footer">NOWAK VIBE CONSULTING</div>
 </div>
@@ -387,7 +391,9 @@ var BASE = 'https://patkers.github.io/barhorn-hero/sounds/';
 var FOLDERS = {
     songs: { folder: 'polka', count: 21, ext: 'mp3', icon: '🎵' },
     funky: { folder: 'funkybeat', count: 27, ext: 'wav', icon: '🎸' },
-    drum:  { folder: 'drumbeat', count: 27, ext: 'wav', icon: '🥁' }
+    drum:  { folder: 'drumbeat', count: 27, ext: 'wav', icon: '🥁' },
+    tambourine: { folder: 'tambeat', count: 18, ext: 'mp3', icon: '🪘' },
+    quackers: { folder: 'quackbeat', count: 21, ext: 'mp3', icon: '🦆' }
 };
 
 // Store playing audio
