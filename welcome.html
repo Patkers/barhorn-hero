@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Welcome to BeatMaster Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body { 
+            font-family: 'Orbitron', sans-serif; 
+            color: #fff; 
+            background: #0a0a1a;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse at 0% 0%, rgba(255, 0, 100, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 0%, rgba(0, 255, 200, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(255, 200, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 100%, rgba(100, 0, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+            animation: bgShift 10s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes bgShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container { 
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+        }
+        
+        .main-title { 
+            font-size: 2em; 
+            font-weight: 900; 
+            background: linear-gradient(90deg, #f0f, #0ff, #ff0, #f0f);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 3s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes titleShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+        
+        .tagline {
+            color: #0ff;
+            font-size: 0.7em;
+            text-shadow: 0 0 20px rgba(0,255,255,0.5);
+        }
+
+        .intro-section {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(0,255,255,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .intro-section h2 {
+            color: #0ff;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        .intro-section p {
+            font-size: 0.6em;
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        .stat-box {
+            display: inline-block;
+            background: rgba(255,0,255,0.2);
+            border: 2px solid #f0f;
+            border-radius: 10px;
+            padding: 15px 25px;
+            margin: 10px;
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #f0f;
+            text-shadow: 0 0 20px rgba(255,0,255,0.8);
+        }
+        
+        .stat-label {
+            font-size: 0.5em;
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .challenge-note {
+            background: rgba(255,200,0,0.1);
+            border-left: 4px solid #fa0;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.55em;
+            color: #fa0;
+        }
+
+        .level-section {
+            margin: 30px 0;
+        }
+        
+        .level-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .level-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.6em;
+            font-weight: bold;
+        }
+        
+        .beginner .level-badge { background: linear-gradient(135deg, #00cc66, #00aa55); }
+        .intermediate .level-badge { background: linear-gradient(135deg, #fa0, #c80); }
+        .advanced .level-badge { background: linear-gradient(135deg, #ff0050, #cc0040); }
+        .bonus .level-badge { background: linear-gradient(135deg, #0af, #08c); }
+        
+        .level-title {
+            font-size: 0.8em;
+            color: #fff;
+        }
+
+        .app-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .app-card:hover {
+            border-color: #0ff;
+            box-shadow: 0 0 30px rgba(0,255,255,0.3);
+            transform: translateY(-3px);
+        }
+        
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .app-icon {
+            font-size: 2em;
+        }
+        
+        .app-name {
+            font-size: 1em;
+            font-weight: 700;
+            color: #0ff;
+        }
+        
+        .app-description {
+            font-size: 0.55em;
+            color: #aaa;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .app-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tab-pill {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 0.45em;
+            color: #fff;
+        }
+        
+        .play-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0ff, #0aa);
+            color: #000;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 0.6em;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0,255,255,0.5);
+            transition: all 0.3s;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0,255,255,0.8);
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #0ff, transparent);
+            margin: 40px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 40px;
+        }
+        
+        .footer-logo {
+            font-size: 0.8em;
+            font-weight: 700;
+            background: linear-gradient(90deg, #f0f, #0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .footer-text {
+            font-size: 0.45em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .main-title { font-size: 1.5em; }
+            .stat-box { display: block; margin: 10px auto; max-width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="main-title">🎛️ Welcome to BeatMaster Pro</div>
+            <div class="tagline">THE ULTIMATE BEAT MIXING CHALLENGE</div>
+        </div>
+
+        <div class="intro-section">
+            <h2>🎯 Can You Become a Master BeatMaster?</h2>
+            <p>
+                These apps let you mix beats, loops, and sounds to create your own music. 
+                The challenge? Find the right BPM, tap at the perfect time, and layer sounds that actually work together. 
+                If you can get a beat match from each tab... you've reached <strong>MASTER LEVEL</strong>.
+            </p>
+            <p>
+                Or just have fun making tunes and saving your favorite mixes!
+            </p>
+            
+            <div class="stat-box">
+                <div class="stat-number">136+ Million</div>
+                <div class="stat-label">POSSIBLE COMBINATIONS</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4.3 Years</div>
+                <div class="stat-label">TO TRY THEM ALL (1/sec)</div>
+            </div>
+        </div>
+
+        <div class="challenge-note">
+            ⚠️ <strong>THIS IS NOT EASY!</strong> You need to find the correct BPM, add sounds at the right time, and blend tracks that complement each other. True mastery has never been accomplished... will you be the first?
+        </div>
+
+        <!-- BEGINNER -->
+        <div class="level-section beginner">
+            <div class="level-header">
+                <span class="level-badge">🌱 BEGINNER</span>
+                <span class="level-title">Start Here</span>
+            </div>
+            
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🪗</span>
+                    <span class="app-name">PolkaMaster Pro</span>
+                </div>
+                <div class="app-description">
+                    Start with a song from the SONGS tab, then play along with the TAMBOURINE tab to add rhythm. 
+                    When you're feeling brave, throw in some fun sounds from the QUACKERS tab for extra flair!
+                </div>
+                <div class="app-tabs">
+                    <span class="tab-pill">🎵 SONGS (18)</span>
+                    <span class="tab-pill">🪘 TAMBOURINE (18)</span>
+                    <span class="tab-pill">🦆 QUACKERS (21)</span>
+                </div>
+                <a href="polka-master.html" class="play-btn">▶️ PLAY POLKAMASTER</a>
+            </div>
+        </div>
+
+        <!-- INTERMEDIATE -->
+        <div class="level-section intermediate">
+            <div class="level-header">
+                <span class="level-badge">⚡ INTERMEDIATE</span>
+                <span class="level-title">Getting Tougher</span>
+            </div>
+            
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🎷</span>
+                    <span class="app-name">SwingMaster Pro</span>
+                </div>
+                <div class="app-description">
+                    Things get more challenging here. Layer your swing songs with tambourine beats. 
+                    For the extra hard level, try adding DRUMS and keeping everything in sync!
+                </div>
+                <div class="app-tabs">
+                    <span class="tab-pill">🎷 SONGS (21)</span>
+                    <span class="tab-pill">🪘 TAMBOURINE (18)</span>
+                    <span class="tab-pill">🥁 DRUM (27)</span>
+                </div>
+                <a href="swing-master.html" class="play-btn">▶️ PLAY SWINGMASTER</a>
+            </div>
+        </div>
+
+        <!-- ADVANCED -->
+        <div class="level-section advanced">
+            <div class="level-header">
+                <span class="level-badge">🔥 ADVANCED</span>
+                <span class="level-title">The Ultimate Challenge</span>
+            </div>
+            
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🎛️</span>
+                    <span class="app-name">BeatMaster Pro G</span>
+                </div>
+                <div class="app-description">
+                    This is it. The ultimate BeatMaster challenge. Layer STYLE, BEAT, FILL, RIFF, FUNKY, DRUM, and TAMBOURINE 
+                    all together. Can you find the perfect combination from all 7 tabs? Only true masters will succeed!
+                </div>
+                <div class="app-tabs">
+                    <span class="tab-pill">🎤 STYLE (18)</span>
+                    <span class="tab-pill">💥 BEAT (24)</span>
+                    <span class="tab-pill">🎵 FILL (18)</span>
+                    <span class="tab-pill">🎶 RIFF (24)</span>
+                    <span class="tab-pill">🎸 FUNKY (27)</span>
+                    <span class="tab-pill">🥁 DRUM (27)</span>
+                    <span class="tab-pill">🪘 TAMB (18)</span>
+                </div>
+                <a href="master-beater.html" class="play-btn">▶️ PLAY BEATMASTER PRO G</a>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- BONUS APPS -->
+        <div class="level-section bonus">
+            <div class="level-header">
+                <span class="level-badge">🎁 BONUS APPS</span>
+                <span class="level-title">Extra Fun</span>
+            </div>
+            
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📯</span>
+                    <span class="app-name">BarHorn Hero</span>
+                </div>
+                <div class="app-description">
+                    The original app that started it all! Bring the sounds of the game to your bar, man cave, or living room. 
+                    Cheers, boos, air horns, whistles, buzzers, and more — everything you need for game day!
+                </div>
+                <a href="index.html" class="play-btn">▶️ PLAY BARHORN HERO</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">😴</span>
+                    <span class="app-name">SleepMaster ZZZ</span>
+                </div>
+                <div class="app-description">
+                    Wind down with ambient sounds for a more relaxing sleep. 
+                    Mix calming sounds and relaxing tones to create your perfect sleep environment.
+                </div>
+                <div class="app-tabs">
+                    <span class="tab-pill">🌙 SOUNDS (24)</span>
+                    <span class="tab-pill">😌 RELAX (18)</span>
+                </div>
+                <a href="sleep-master.html" class="play-btn">▶️ PLAY SLEEPMASTER</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-logo">NOWAK VIBE CONSULTING</div>
+            <div class="footer-text">Making beats. Breaking limits. 🎵</div>
+        </div>
+    </div>
+</body>
+</html>
