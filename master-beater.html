@@ -65,9 +65,39 @@
             pointer-events: none;
         }
 
+        .nav-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(10, 10, 26, 0.95);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        .nav-home {
+            color: #0ff;
+            text-decoration: none;
+            font-size: 0.5em;
+            font-weight: bold;
+            padding: 5px 10px;
+            border: 2px solid #0ff;
+            border-radius: 8px;
+            background: rgba(0,255,255,0.1);
+        }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-link {
+            text-decoration: none;
+            font-size: 1em;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+        .nav-link:hover { opacity: 1; transform: scale(1.2); }
+
         .container { 
             flex: 1; display: flex; flex-direction: column; 
-            padding: 8px; width: 100%; max-width: 100%;
+            padding: 50px 8px 8px; width: 100%; max-width: 100%;
             position: relative; z-index: 1;
             overflow: hidden;
         }
@@ -340,6 +370,16 @@
     <div class="orb orb2"></div>
     <div class="orb orb3"></div>
     <div class="grid-overlay"></div>
+    
+    <nav class="nav-bar">
+        <a href="welcome.html" class="nav-home">🏠 HOME</a>
+        <div class="nav-links">
+            <a href="polka-master.html" class="nav-link">🪗</a>
+            <a href="swing-master.html" class="nav-link">🎷</a>
+            <a href="sleep-master.html" class="nav-link">😴</a>
+            <a href="index.html" class="nav-link">📯</a>
+        </div>
+    </nav>
     
 <div class="container">
     <div class="header">
