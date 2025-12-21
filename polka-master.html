@@ -153,22 +153,29 @@
             padding: 5px 0;
         }
         .tab-btn {
-            background: rgba(255,170,0,0.3);
-            border: 2px solid #fa0;
+            background: rgba(255,170,0,0.2);
+            border: 2px solid rgba(255,170,0,0.4);
             border-radius: 8px;
-            padding: 8px 20px;
+            padding: 8px 15px;
             color: #fff;
             font-family: 'Orbitron';
-            font-size: 0.6em;
+            font-size: 0.5em;
             font-weight: bold;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: rgba(255,170,0,0.4);
+            border-color: #fa0;
             box-shadow: 0 0 15px rgba(255,170,0,0.4);
         }
 
         .sound-panel {
+            display: none;
             flex: 1;
             overflow-y: auto;
             padding: 5px;
         }
+        .sound-panel.active { display: block; }
         
         .sound-grid { 
             display: grid; 
@@ -352,10 +359,14 @@
     </div>
     
     <div class="tab-container">
-        <div class="tab-btn">🎵 SONGS</div>
+        <button class="tab-btn active" onclick="showTab('songs')">🎵 SONGS</button>
+        <button class="tab-btn" onclick="showTab('funky')">🎸 FUNKY</button>
+        <button class="tab-btn" onclick="showTab('drum')">🥁 DRUM</button>
     </div>
 
-    <div class="sound-panel" id="panel-songs"></div>
+    <div class="sound-panel active" id="panel-songs"></div>
+    <div class="sound-panel" id="panel-funky"></div>
+    <div class="sound-panel" id="panel-drum"></div>
 
     <div class="footer">NOWAK VIBE CONSULTING</div>
 </div>
@@ -372,14 +383,35 @@
 <script>
 var BASE = 'https://patkers.github.io/barhorn-hero/sounds/';
 
-// Polka folder with 24 songs
-var FOLDER = 'polka';
-var COUNT = 24;
+// Folders with counts and extensions
+var FOLDERS = {
+    songs: { folder: 'polka', count: 21, ext: 'mp3', icon: '🎵' },
+    funky: { folder: 'funkybeat', count: 27, ext: 'wav', icon: '🎸' },
+    drum:  { folder: 'drumbeat', count: 27, ext: 'wav', icon: '🥁' }
+};
 
 // Store playing audio
 var playing = {};
 var buttons = {};
 var dots = [];
+
+function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.sound-panel').forEach(function(p) { p.classList.remove('active'); });
+    event.target.classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+    updateButtons();
+}
+
+function updateButtons() {
+    Object.keys(buttons).forEach(function(key) {
+        if (playing[key]) {
+            buttons[key].classList.add('on');
+        } else {
+            buttons[key].classList.remove('on');
+        }
+    });
+}
 
 function flashDot() {
     var dot = dots[Math.floor(Math.random() * dots.length)];
@@ -387,9 +419,9 @@ function flashDot() {
     setTimeout(function() { dot.classList.remove('on'); }, 150);
 }
 
-function toggle(file, btn) {
-    var key = FOLDER + '/' + file;
-    var url = BASE + FOLDER + '/' + file;
+function toggle(folder, file, btn) {
+    var key = folder + '/' + file;
+    var url = BASE + folder + '/' + file;
     
     if (playing[key]) {
         // STOP this sound
@@ -421,25 +453,25 @@ function stopAll() {
     setTimeout(function() { dots.forEach(function(d) { d.classList.remove('on'); }); }, 200);
 }
 
-function buildPanel() {
-    var panel = document.getElementById('panel-songs');
+function buildPanel(panelId, info) {
+    var panel = document.getElementById('panel-' + panelId);
     var grid = document.createElement('div');
     grid.className = 'sound-grid';
     
-    for (var i = 1; i <= COUNT; i++) {
+    for (var i = 1; i <= info.count; i++) {
         var num = i < 10 ? '0' + i : '' + i;
-        var file = 'beat' + num + '.mp3';
+        var file = 'beat' + num + '.' + info.ext;
         
         var btn = document.createElement('div');
         btn.className = 'sound-btn';
-        btn.innerHTML = '<div class="sound-icon">🪗</div><div class="sound-label">SONG ' + num + '</div>';
+        btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
         
-        var key = FOLDER + '/' + file;
+        var key = info.folder + '/' + file;
         buttons[key] = btn;
         
-        (function(f, b) {
-            btn.onclick = function() { toggle(f, b); };
-        })(file, btn);
+        (function(f, fl, b) {
+            btn.onclick = function() { toggle(f, fl, b); };
+        })(info.folder, file, btn);
         
         grid.appendChild(btn);
     }
@@ -455,7 +487,11 @@ for (var i = 0; i < 16; i++) {
     dots.push(dot);
 }
 
-buildPanel();
+// Build all panels
+Object.keys(FOLDERS).forEach(function(panelId) {
+    buildPanel(panelId, FOLDERS[panelId]);
+});
+
 document.getElementById('stopBtn').onclick = stopAll;
 
 // MODAL SYSTEM
@@ -618,9 +654,10 @@ function loadMix(index) {
             var btn = buttons[key];
             if (btn) {
                 var parts = key.split('/');
+                var folder = parts[0];
                 var file = parts[1];
                 
-                var url = BASE + FOLDER + '/' + file;
+                var url = BASE + folder + '/' + file;
                 var audio = new Audio(url);
                 audio.loop = true;
                 playing[key] = audio;
