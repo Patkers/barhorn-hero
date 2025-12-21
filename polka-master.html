@@ -393,7 +393,13 @@ var FOLDERS = {
     funky: { folder: 'funkybeat', count: 27, ext: 'wav', icon: '🎸' },
     drum:  { folder: 'drumbeat', count: 27, ext: 'wav', icon: '🥁' },
     tambourine: { folder: 'tambeat', count: 18, ext: 'mp3', icon: '🪘' },
-    quackers: { folder: 'quackbeat', count: 21, ext: 'mp3', icon: '🦆' }
+    quackers: { folder: 'quackbeat', count: 21, ext: 'mixed', icon: '🦆', files: [
+        'beat01.mp3', 'beat02.mp3', 'beat03.wav', 'beat04.wav', 'beat05.wav',
+        'beat06.wav', 'beat07.wav', 'beat08.wav', 'beat09.wav', 'beat10.wav',
+        'beat11.wav', 'beat12.wav', 'beat13.wav', 'beat14.wav', 'beat15.wav',
+        'beat16.wav', 'beat17.wav', 'beat18.wav', 'beat19.wav', 'beat20.wav',
+        'beat21.mp3'
+    ]}
 };
 
 // Store playing audio
@@ -464,22 +470,42 @@ function buildPanel(panelId, info) {
     var grid = document.createElement('div');
     grid.className = 'sound-grid';
     
-    for (var i = 1; i <= info.count; i++) {
-        var num = i < 10 ? '0' + i : '' + i;
-        var file = 'beat' + num + '.' + info.ext;
-        
-        var btn = document.createElement('div');
-        btn.className = 'sound-btn';
-        btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
-        
-        var key = info.folder + '/' + file;
-        buttons[key] = btn;
-        
-        (function(f, fl, b) {
-            btn.onclick = function() { toggle(f, fl, b); };
-        })(info.folder, file, btn);
-        
-        grid.appendChild(btn);
+    // Handle mixed extensions with files array
+    if (info.files) {
+        info.files.forEach(function(file, idx) {
+            var num = (idx + 1) < 10 ? '0' + (idx + 1) : '' + (idx + 1);
+            
+            var btn = document.createElement('div');
+            btn.className = 'sound-btn';
+            btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
+            
+            var key = info.folder + '/' + file;
+            buttons[key] = btn;
+            
+            (function(f, fl, b) {
+                btn.onclick = function() { toggle(f, fl, b); };
+            })(info.folder, file, btn);
+            
+            grid.appendChild(btn);
+        });
+    } else {
+        for (var i = 1; i <= info.count; i++) {
+            var num = i < 10 ? '0' + i : '' + i;
+            var file = 'beat' + num + '.' + info.ext;
+            
+            var btn = document.createElement('div');
+            btn.className = 'sound-btn';
+            btn.innerHTML = '<div class="sound-icon">' + info.icon + '</div><div class="sound-label">' + num + '</div>';
+            
+            var key = info.folder + '/' + file;
+            buttons[key] = btn;
+            
+            (function(f, fl, b) {
+                btn.onclick = function() { toggle(f, fl, b); };
+            })(info.folder, file, btn);
+            
+            grid.appendChild(btn);
+        }
     }
     
     panel.appendChild(grid);
